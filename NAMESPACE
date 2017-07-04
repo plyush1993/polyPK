@@ -1,0 +1,32 @@
+export(CorrPlot)
+export(DataPre)
+export(GetAbso)
+export(GetDiffData)
+export(GetEndo)
+export(GetSecdAbso)
+export(HeatMap)
+export(Simi)
+export(PKs)
+export(ScatPlot)
+ importFrom("grDevices", "dev.off", "pdf")
+  importFrom("graphics", "abline", "legend", "lines", "par", "plot",
+             "points", "text", "title", "xinch", "yinch")
+  importFrom("stats", "cor.test", "lm", "median", "p.adjust", "predict",
+             "qt", "quantile", "sd", "t.test", "wilcox.test")
+  importFrom("utils", "write.csv")
+  importFrom("graphics", "axis")
+  importFrom(Hmisc,errbar)
+   importFrom("stats", "dist")
+import("plyr","PKNCA","xlsx")
+importFrom(mixOmics,plsda,pls)
+importFrom(pcaMethods,completeObs,pca)
+importFrom(impute,impute.knn)
+importFrom(missForest,missForest)
+importFrom(imputeLCMD,impute.QRILC)
+importFrom(sqldf,sqldf)
+importFrom(corrplot,corrplot)
+importFrom(circlize,chordDiagram)
+importFrom(gplots,heatmap.2)
+
+
+

@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen, Wei Jia" />
+
+
+<title>polyPK</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">polyPK</h1>
+<h4 class="author"><em>Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen, Wei Jia</em></h4>
+<h4 class="date"><em>2017-5-25</em></h4>
+
+
+
+<p>The advent of mass spectrometry based analytical technologies coupled with multivariate statistical methods offers tremendous new opportunities for understanding the pharmacokinetics of multicomponent herbal medicines. In recent years, Jia’s group proposed a polyPK strategy, in a few review papers (Science 2015, Current Drug Metabolism 2010, Evidence-Based Complementary and Alternative Medicine 2013), to characterize the concentration-time profile and the metabolic response profile of multicomponent drugs, using an integrated phytochemical and metabolomics approach. The brand new strategy has been successfully applied in examining the complex pharmacokinetics and pharmacodynamics profiles of tea (Journal of Proteome Research 2012) and Huangqi decoction (Clinical Pharmacology &amp; Therapeutics 2016). This package is the first implementation of the <code>polyPK</code> strategy with 10 easy-to-use functions. The absorbed drug constitutes, the downstream metabolites of the drug constituents and the endogenous metabolites impacted by them can be identified. The association of different types of compounds and their alterations along time can be illustrated by various figures and tables. The representative PK parameters of all compounds can be calculated.</p>
+<p>10 functions of the package of polyPK: <code>DataPre</code>,<code>GetDiffData</code>,<code>GetEndo</code>,<code>GetAbso</code>,<code>GetSecdAbso</code>,<code>PKs</code>,<code>Simi</code>,<code>ScatPlot</code>,<code>HeatMap</code>,<code>CorrPlot</code></p>
+<div id="datapre" class="section level2">
+<h2><code>DataPre</code></h2>
+<p>Preprocess the input data. Variables with a lot of zeros and outliers may be removed. Missing values may be imputed and filled by various methods. Data may be transformed by logarithm transformation.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(polyPK)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;postData&quot;</span>)
+pred_post&lt;-polyPK::<span class="kw">DataPre</span>(<span class="dt">tes=</span>postData,<span class="dt">mv=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">rz=</span><span class="dv">80</span>,<span class="dt">multiple=</span><span class="fl">0.1</span>,<span class="dt">sv=</span><span class="ot">TRUE</span>,<span class="dt">log=</span><span class="ot">FALSE</span>,<span class="dt">filepath=</span><span class="kw">getwd</span>())</code></pre></div>
+<p>An example of preprocessed post-dose dataset:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pred_post[<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">10</span>),<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">10</span>)]</code></pre></div>
+<pre><code>##                     Name        ID      m.z    RT.min.         X1.1
+## 1                 gender               &lt;NA&gt;       &lt;NA&gt;            1
+## 2                  group               &lt;NA&gt;       &lt;NA&gt;            1
+## 3          timepoints(h)               &lt;NA&gt;       &lt;NA&gt;        0.083
+## 4      isoliquiritigenin HMDB30808 255.0682  1.4637000 1.370141e+03
+## 5         hyocholic acid   inx0005 407.2801  3.2258500 2.784204e+02
+## 6  octanoyl-rac-glycerol   inx0001 219.1489  3.3205667 3.720998e+03
+## 7     oxalosuccinic acid HMDB03974 191.0185  0.6874667 2.020981e+03
+## 8         palmitic amide HMDB12273 256.2634  6.9251500 2.002083e+05
+## 9          phenylalanine HMDB00159 218.0000 13.1564258 1.540889e+06
+## 10      stearidonic acid HMDB06547 275.2011  4.0438833 2.247636e+01
+##            X1.2         X1.3         X1.4         X1.5         X1.6
+## 1             1            1            1            1            2
+## 2             1            1            1            1            1
+## 3         0.083        0.083        0.083        0.083        0.083
+## 4  3.178774e+03 5.442983e+02 1.379580e+03 3.237247e+03 7.937158e+02
+## 5  2.784204e+02 2.784204e+02 2.784204e+02 2.784204e+02 2.784204e+02
+## 6  1.617713e+03 2.905334e+03 4.732409e+03 3.777234e+03 1.904859e+03
+## 7  1.814765e+03 2.009507e+03 2.375203e+03 2.492505e+03 6.724538e+02
+## 8  1.655981e+05 3.131862e+05 2.078951e+05 1.800302e+05 6.973914e+05
+## 9  1.119705e+06 1.310229e+06 1.475237e+06 1.878999e+06 1.100194e+06
+## 10 2.247636e+01 2.247636e+01 2.247636e+01 2.247636e+01 2.247636e+01</code></pre>
+</div>
+<div id="simi" class="section level2">
+<h2><code>Simi</code></h2>
+<p>A function which can get the similar metabolites of two datas.Especially the similar metabolites between drug and pre-dose metabolites.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;preData&quot;</span>)
+<span class="kw">data</span>(<span class="st">&quot;drugData&quot;</span>)
+<span class="kw">Simi</span>(data1&lt;-preData,data2&lt;-drugData,<span class="dt">filepath=</span><span class="kw">getwd</span>())</code></pre></div>
+<pre><code>## $`repetitive rates in data1`
+## [1] 0.1
+## 
+## $`repetitive rates in data2`
+## [1] 0.3333333
+## 
+## $`similar metabolites`
+##      data1[-c(1:3), 2]
+## [1,] &quot;inx0001&quot;</code></pre>
+</div>
+<div id="getdiffdata" class="section level2">
+<h2><code>GetDiffData</code></h2>
+<p>A function to get all the differential compounds between the pre-dose and every post-dose datasets:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;preData&quot;</span>)
+<span class="kw">data</span>(<span class="st">&quot;postData&quot;</span>)
+<span class="kw">data</span>(<span class="st">&quot;design&quot;</span>)
+<span class="kw">data</span>(<span class="st">&quot;simidata&quot;</span>)
+dif&lt;-<span class="kw">GetDiffData</span>(preData,postData,simidata,<span class="dt">mv=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">rz=</span><span class="dv">80</span>,<span class="dt">multiple=</span><span class="fl">0.1</span>,<span class="dt">sv=</span><span class="ot">TRUE</span>,<span class="dt">log=</span><span class="ot">FALSE</span>,<span class="dt">t=</span><span class="st">&quot;Ttest&quot;</span>,<span class="dt">r.adj=</span><span class="st">&quot;fdr&quot;</span>,<span class="dt">filepath=</span><span class="kw">getwd</span>(),<span class="dt">design=</span>design)
+<span class="co">#'</span></code></pre></div>
+<p>An example of the differential compounds, with preprocessed data:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">prepoA&lt;-dif$A[<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">12</span>),<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">7</span>)]
+<span class="kw">as.data.frame</span>(prepoA)</code></pre></div>
+<pre><code>##                     Name        ID      m.z    RT.min.        X0.1
+## 1                 gender               &lt;NA&gt;       &lt;NA&gt;           1
+## 2                  group               &lt;NA&gt;       &lt;NA&gt;           0
+## 3          timepoints(h)               &lt;NA&gt;       &lt;NA&gt;           0
+## 15 octanoyl-rac-glycerol   inx0001 219.1401  3.5638000   4180.3304
+## 21     n-dodecanoic acid HMDB00638 199.1693  5.2730000 141903.8371
+## 31 3-hydroxybutyric acid HMDB00357 103.0400  0.6600000  18175.8722
+## 4                taurine HMDB00251 124.0100  0.6800000  54652.4522
+## 5     phenylpyruvic acid HMDB00205 165.0545  3.5218833  12599.6705
+## 6         hyocholic acid   inx0005 407.2801  3.2258500        &lt;NA&gt;
+## 7      isoliquiritigenin HMDB30808 255.0682  1.4637000        &lt;NA&gt;
+## 8       stearidonic acid HMDB06547 275.2011  4.0438833        &lt;NA&gt;
+## 9    2-aminobutyric acid HMDB00452 104.0545  0.7084167        &lt;NA&gt;
+##           X0.2        X0.3
+## 1            1           1
+## 2            0           0
+## 3            0           0
+## 15   5075.2366   4765.7406
+## 21 142425.9489  59180.5145
+## 31  14711.6639  11916.5011
+## 4   58416.8343  60813.0134
+## 5   13562.6711  20083.7873
+## 6         &lt;NA&gt;        &lt;NA&gt;
+## 7         &lt;NA&gt;        &lt;NA&gt;
+## 8         &lt;NA&gt;        &lt;NA&gt;
+## 9         &lt;NA&gt;        &lt;NA&gt;</code></pre>
+<p>An example of the differential compounds, with original data:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">orgA&lt;-dif$A_pre[<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">12</span>),<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">7</span>)]
+<span class="kw">as.data.frame</span>(orgA)</code></pre></div>
+<pre><code>##                     Name        ID         m.z     RT.min.        X0.1
+## 1                 gender                  &lt;NA&gt;        &lt;NA&gt;           1
+## 2                  group                  &lt;NA&gt;        &lt;NA&gt;           0
+## 3          timepoints(h)                  &lt;NA&gt;        &lt;NA&gt;           0
+## 15    phenylpyruvic acid HMDB00205 165.0545212 3.521883333 12599.67047
+## 21               taurine HMDB00251      124.01        0.68 54652.45217
+## 31 3-hydroxybutyric acid HMDB00357      103.04        0.66 18175.87221
+## 4      n-dodecanoic acid HMDB00638    199.1693       5.273 141903.8371
+## 5  octanoyl-rac-glycerol   inx0001 219.1401489      3.5638 4180.330371
+## 6         hyocholic acid   inx0005 407.2801088     3.22585        &lt;NA&gt;
+## 7      isoliquiritigenin HMDB30808 255.0681916      1.4637        &lt;NA&gt;
+## 8       stearidonic acid HMDB06547 275.2010927 4.043883333        &lt;NA&gt;
+## 9    2-aminobutyric acid HMDB00452 104.0544716 0.708416667        &lt;NA&gt;
+##           X0.2        X0.3
+## 1            1           1
+## 2            0           0
+## 3            0           0
+## 15 13562.67108 20083.78726
+## 21 58416.83432 60813.01343
+## 31 14711.66391 11916.50106
+## 4  142425.9489 59180.51449
+## 5  5075.236614 4765.740625
+## 6         &lt;NA&gt;        &lt;NA&gt;
+## 7         &lt;NA&gt;        &lt;NA&gt;
+## 8         &lt;NA&gt;        &lt;NA&gt;
+## 9         &lt;NA&gt;        &lt;NA&gt;</code></pre>
+<p>The p values:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">p&lt;-dif$p
+p</code></pre></div>
+<pre><code>##            [,1]       [,2]        [,3]         [,4]         [,5]
+## [1,] 0.02612277 0.46625184 0.059124442 0.0171618488 6.277746e-05
+## [2,] 0.21600723 0.08936120 0.116288148 0.2767443294 3.257084e-01
+## [3,] 0.55931404 0.62797776 0.754002236 0.9951415474 2.926128e-01
+## [4,] 0.90010481 0.86732615 0.124180790 0.0124306102 6.269413e-02
+## [5,] 0.27534667 0.09259060 0.114830950 0.1015186587 1.201289e-01
+## [6,] 0.83651369 0.82068000 0.371571328 0.9196653728 5.379117e-01
+## [7,] 0.05934515 0.01212962 0.002326595 0.0008524079 2.120064e-04
+##              [,6]         [,7]         [,8]         [,9]
+## [1,] 0.0001156508 0.0001227209 0.0006174414 1.934193e-05
+## [2,] 0.2112745475 0.5267109128 0.7750469254 1.537414e-02
+## [3,] 0.3359581296 0.3751420887 0.1916954009 3.250817e-02
+## [4,] 0.5198512612 0.0024744481 0.0045402806 4.330134e-03
+## [5,] 0.0002520865 0.5068921065 0.8579179695 8.266721e-01
+## [6,] 0.1647501303 0.7312084247 0.5184174149 7.630634e-04
+## [7,] 0.0001290038 0.0143945068 0.0309441731 1.203254e-01</code></pre>
+<p>The adjusted p values:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">padj&lt;-dif$p_adj
+padj</code></pre></div>
+<pre><code>##            [,1]       [,2]       [,3]       [,4]        [,5]        [,6]
+## [1,] 0.08228671 0.65275258 0.15578102 0.05690508 0.001625448 0.001625448
+## [2,] 0.36779610 0.21604474 0.23689069 0.44704853 0.500478690 0.367796101
+## [3,] 0.69091734 0.76081921 0.87966928 0.99514155 0.460865118 0.503937194
+## [4,] 0.92961644 0.91069246 0.23707242 0.04894553 0.157989205 0.677199745
+## [5,] 0.44704853 0.21604474 0.23689069 0.22841698 0.236890686 0.002268779
+## [6,] 0.90862694 0.90862694 0.53713526 0.93449869 0.677768739 0.305272300
+## [7,] 0.15578102 0.04894553 0.01299085 0.00537017 0.002226067 0.001625448
+##             [,7]        [,8]        [,9]
+## [1,] 0.001625448 0.004862351 0.001218541
+## [2,] 0.677199745 0.887781024 0.053809475
+## [3,] 0.537135263 0.345051722 0.093091570
+## [4,] 0.012990853 0.020431263 0.020431263
+## [5,] 0.677199745 0.910692456 0.908626938
+## [6,] 0.869172278 0.677199745 0.005341444
+## [7,] 0.053344349 0.092832519 0.236890686</code></pre>
+</div>
+<div id="getendo" class="section level2">
+<h2><code>GetEndo</code></h2>
+<p>A function to get the altered endogenous metabolites by similarity analysis on the list of differential compounds and the list of pre-dose compounds：</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">data</span>(<span class="st">&quot;preData&quot;</span>)
+ <span class="kw">data</span>(<span class="st">&quot;A&quot;</span>)
+ <span class="kw">data</span>(<span class="st">&quot;design&quot;</span>)
+ <span class="kw">data</span>(<span class="st">&quot;simidata&quot;</span>)
+<span class="kw">GetEndo</span>(preData,A,simidata,<span class="dt">sim=</span><span class="dv">80</span>,<span class="dt">filepath=</span><span class="kw">getwd</span>(),<span class="dt">design=</span>design)</code></pre></div>
+<pre><code>##                     Name        ID      m.z   RT.min.       X0.1
+## 1                 gender               &lt;NA&gt;      &lt;NA&gt;          1
+## 2                  group               &lt;NA&gt;      &lt;NA&gt;          0
+## 3          timepoints(h)               &lt;NA&gt;      &lt;NA&gt;          0
+## 14 octanoyl-rac-glycerol   inx0001 219.1401 3.5638000   4180.330
+## 12         hippuric acid HMDB00714 178.0503 0.7566000   1503.207
+## 13  hexadecanedioic acid HMDB00672 285.2062 4.0334167   3250.311
+## 21     n-dodecanoic acid HMDB00638 199.1693 5.2730000 141903.837
+## 31 3-hydroxybutyric acid HMDB00357 103.0400 0.6600000  18175.872
+## 4                taurine HMDB00251 124.0100 0.6800000  54652.452
+## 5     phenylpyruvic acid HMDB00205 165.0545 3.5218833  12599.670
+##          X0.2        X0.3        X0.4      X0.5        X0.6        X0.7
+## 1           1           1           1         1           2           2
+## 2           0           0           0         0           0           0
+## 3           0           0           0         0           0           0
+## 14   5075.237   4765.7406   4081.1987  2735.835   4993.6567   4433.1691
+## 12   8011.543   2280.2458   5714.8831  7332.153   3401.4469   7810.1283
+## 13   2808.426    264.2712    583.6932  2367.337    827.6251    328.7123
+## 21 142425.949  59180.5145  51617.3287 46397.367 144256.4372  28979.3290
+## 31  14711.664  11916.5011   4837.1843 10554.832   6304.4677   3049.0139
+## 4   58416.834  60813.0134  64769.4094 64769.409  36992.0058  59748.2733
+## 5   13562.671  20083.7873  19057.1646 19298.528  16289.8042  19507.4954
+##           X0.8       X0.9      X0.10         X1.1         X1.2
+## 1            2          2          2            1            1
+## 2            0          0          0            1            1
+## 3            0          0          0        0.083        0.083
+## 14   4149.5551   3543.962   3309.242 3.720998e+03 1.617713e+03
+## 12   2085.4607  10201.423  10201.423         &lt;NA&gt;         &lt;NA&gt;
+## 13    986.9264   3250.311   3219.459         &lt;NA&gt;         &lt;NA&gt;
+## 21  72072.4159  96966.887 202042.030 7.605930e+04 1.469626e+05
+## 31   5876.3078  12417.050  10591.569 2.328958e+04 2.097504e+04
+## 4   54113.2992  50096.305  54601.927 4.706105e+04 6.159389e+04
+## 5   21049.4087  17280.879  21919.076 1.044584e+04 1.422142e+04
+##            X1.3         X1.4         X1.5         X1.6         X1.7
+## 1             1            1            1            2            2
+## 2             1            1            1            1            1
+## 3         0.083        0.083        0.083        0.083        0.083
+## 14 2.905334e+03 4.732409e+03 3.777234e+03 1.904859e+03 2.830200e+03
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 8.931413e+04 5.503614e+04 5.126085e+04 1.420261e+05 5.738844e+04
+## 31 1.333990e+04 5.702339e+03 1.273751e+04 6.457741e+03 4.600448e+03
+## 4  6.463091e+04 6.946875e+04 6.031007e+04 3.541851e+04 5.317371e+04
+## 5  2.242246e+04 1.792318e+04 1.352738e+04 1.408044e+04 1.490617e+04
+##            X1.8         X1.9        X1.10         X2.1         X2.2
+## 1             2            2            2            1            1
+## 2             1            1            1            2            2
+## 3         0.083        0.083        0.083         0.25         0.25
+## 14 2.992664e+03 2.832788e+03 4.350362e+03 3.033735e+03 3.858627e+03
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 1.063669e+05 1.050993e+05 1.293370e+05 7.231874e+04 1.469626e+05
+## 31 1.085076e+04 1.684745e+04 1.177731e+04 1.948900e+04 1.995786e+04
+## 4  4.892039e+04 5.108606e+04 5.878497e+04 5.677723e+04 6.186181e+04
+## 5  1.616860e+04 1.102098e+04 1.640514e+04 1.288955e+04 1.434161e+04
+##            X2.3         X2.4         X2.5         X2.6         X2.7
+## 1             1            1            1            2            2
+## 2             2            2            2            2            2
+## 3          0.25         0.25         0.25         0.25         0.25
+## 14 3.880638e+03 4.293698e+03 2.724455e+03 4.105260e+03 4.403498e+03
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 8.280487e+04 6.358682e+04 4.967099e+04 1.469626e+05 4.431479e+04
+## 31 1.364561e+04 7.308365e+03 1.763203e+04 8.910625e+03 4.922363e+03
+## 4  6.484992e+04 6.592919e+04 5.467160e+04 3.877003e+04 5.755359e+04
+## 5  1.958049e+04 1.534140e+04 1.375062e+04 1.342531e+04 1.619240e+04
+##            X2.8         X2.9        X2.10         X3.1         X3.2
+## 1             2            2            2            1            1
+## 2             2            2            2            3            3
+## 3          0.25         0.25         0.25          0.5          0.5
+## 14 2.925096e+03 4.931640e+03 4.606038e+03 4.211090e+03 2.375966e+03
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 9.295671e+04 1.021819e+05 1.469626e+05 4.769324e+04 8.845760e+04
+## 31 1.414883e+04 1.854192e+04 1.393188e+04 1.974212e+04 2.037162e+04
+## 4  4.713009e+04 4.952651e+04 5.339489e+04 4.992021e+04 6.241529e+04
+## 5  1.245178e+04 1.338572e+04 1.572960e+04 9.024338e+03 1.059318e+04
+##            X3.3         X3.4         X3.5         X3.6         X3.7
+## 1             1            1            1            2            2
+## 2             3            3            3            3            3
+## 3           0.5          0.5          0.5          0.5          0.5
+## 14 2.337628e+03 3.525279e+03 3.716061e+03 3.870560e+03 3.280670e+03
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 4.537689e+04 4.738112e+04 3.414156e+04 8.604576e+04 4.634118e+04
+## 31 1.588789e+04 6.761843e+03 1.766571e+04 1.007156e+04 4.981084e+03
+## 4  5.222740e+04 6.611711e+04 5.776128e+04 3.235281e+04 5.803822e+04
+## 5  1.648677e+04 1.550028e+04 1.350743e+04 1.184193e+04 1.514302e+04
+##            X3.8         X3.9        X3.10         X4.1         X4.2
+## 1             2            2            2            1            1
+## 2             3            3            3            4            4
+## 3           0.5          0.5          0.5            1            1
+## 14 2.743306e+03 3.393244e+03 4.839369e+03    2646.1411    3448.7697
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 7.838628e+04 7.489274e+04 1.141746e+05   33146.1590   48937.3308
+## 31 1.447867e+04 1.552779e+04 1.036542e+04   14054.8494   15689.7455
+## 4  4.877033e+04 4.475100e+04 5.000915e+04   57140.3900   62744.8885
+## 5  1.555570e+04 1.289372e+04 1.537515e+04   11066.0933   13289.9653
+##            X4.3         X4.4         X4.5         X4.6         X4.7
+## 1             1            1            1            2            2
+## 2             4            4            4            4            4
+## 3             1            1            1            1            1
+## 14    2674.3427    3280.8034    4711.6220    3008.1355    4086.1531
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   30312.3939   33495.2690   23426.9284   44921.5102   28612.4767
+## 31   14189.6975    7565.3947   18590.6536    9075.0677    7047.9361
+## 4    68100.3304   69966.4003   54660.5149   36808.5758   52146.4470
+## 5    15061.9170   17281.8554   11946.4339   12447.5308   11634.6515
+##            X4.8         X4.9        X4.10         X5.1         X5.2
+## 1             2            2            2            1            1
+## 2             4            4            4            5            5
+## 3             1            1            1            2            2
+## 14    3065.9686 3.318351e+03    2673.8852    3625.4119    2496.3978
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   77882.3440 5.736015e+04   48629.5463   45273.1698   63106.2309
+## 31   18401.5305 1.394928e+04   14275.5131   13608.0650   14624.1756
+## 4    53497.0486 4.773151e+04   52054.0387   51216.7729   58310.0320
+## 5    13193.0917 1.352302e+04   13724.5891    9336.2797   10688.9841
+##            X5.3         X5.4         X5.5        X5.6        X5.7
+## 1             1            1            1           2           2
+## 2             5            5            5           5           5
+## 3             2            2            2           2           2
+## 14    1757.0399    2564.2173    2805.7129   1153.0243   2927.9869
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;
+## 21   71162.6265   44618.7281   39864.8524  68781.1399  49358.2478
+## 31   17375.0748    8023.0523   15917.8028  11289.1375   6582.2637
+## 4    62193.3641   66204.7945   54095.1389  27649.2229  62424.6592
+## 5    15221.4307   15869.2806   12256.3657   9960.2915  13835.1103
+##            X5.8         X5.9        X5.10         X6.1         X6.2
+## 1             2            2            2            1            1
+## 2             5            5            5            6            6
+## 3             2            2            2            4            4
+## 14 2.840386e+03    2265.3794    2127.2873 2.223131e+03 3.315628e+03
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 8.212366e+04   55218.3199   80796.1338 1.014137e+05 1.469626e+05
+## 31 1.462658e+04   11938.2909   14961.5945 2.328958e+04 2.328958e+04
+## 4  5.260916e+04   49785.7178   47439.7803 4.965634e+04 5.907598e+04
+## 5  1.126301e+04   11942.4501   13386.1634 1.033427e+04 1.154178e+04
+##            X6.3         X6.4         X6.5         X6.6         X6.7
+## 1             1            1            1            2            2
+## 2             6            6            6            6            6
+## 3             4            4            4            4            4
+## 14 1.634174e+03 2.398416e+03 3.421965e+03 2.429446e+03   2661.69124
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 9.524910e+04 1.026721e+05 6.433207e+04 1.053721e+05  91122.34592
+## 31 2.236307e+04 1.722697e+04 1.769843e+04 2.216890e+04   7365.18413
+## 4  5.067346e+04 6.203562e+04 6.184344e+04 2.607769e+04  52979.62924
+## 5  1.554430e+04 1.414057e+04 1.397293e+04 9.197782e+03  12655.08525
+##            X6.8         X6.9        X6.10         X7.1         X7.2
+## 1             2            2            2            1            1
+## 2             6            6            6            7            7
+## 3             4            4            4            6            6
+## 14 2.496147e+03 3.292361e+03 2.549347e+03    2569.5941    2091.5383
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 1.242132e+05 1.382707e+05 1.469626e+05   22538.8198   33672.2500
+## 31 1.844305e+04 2.328958e+04 2.228411e+04    9717.0654    8860.1942
+## 4  4.764263e+04 4.554991e+04 4.121457e+04   50806.3970   63487.2146
+## 5  1.148499e+04 1.292732e+04 9.334460e+03   13709.8587   13031.8151
+##            X7.3         X7.4         X7.5         X7.6         X7.7
+## 1             1            1            1            2            2
+## 2             7            7            7            7            7
+## 3             6            6            6            6            6
+## 14    3224.4716    1069.9343    2833.4270    3281.9023    2852.8213
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   21908.8215   20041.1797   17756.9783   15873.4543   27423.6067
+## 31   11688.1072    4773.2167   10027.3593    5519.2398    2817.7406
+## 4    57635.5798   69835.3532   62094.5497   34354.6655   56728.9915
+## 5    16420.2844   19829.8223   15156.4648   15314.1648   15039.9007
+##            X7.8         X7.9        X7.10         X8.1         X8.2
+## 1             2            2            2            1            1
+## 2             7            7            7            8            8
+## 3             6            6            6            8            8
+## 14 3.122827e+03    2533.6538    1949.3774    4176.2008    2620.2380
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 3.838789e+04   23277.3524   26501.2144   26811.1937   69407.9927
+## 31 1.202016e+04   12236.8362    8376.5918   12885.1370   16843.4817
+## 4  4.942499e+04   45504.8476   54776.2816   49162.7414   59614.9149
+## 5  1.145925e+04   13272.9344   14194.5551   14794.4984   14420.8686
+##            X8.3         X8.4         X8.5         X8.6         X8.7
+## 1             1            1            1            2            2
+## 2             8            8            8            8            8
+## 3             8            8            8            8            8
+## 14    2913.3486    2156.3241    2800.5507    1448.1588    3355.5500
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   24886.6558   22379.2699   18564.0535   19135.7185   34740.0489
+## 31   16287.8127    9746.7944    8054.4287    4918.1340    3816.5593
+## 4    54975.2092   69752.0873   60342.5721   32318.3457   56005.7351
+## 5    13634.0621   17743.6931   13723.3396   14348.5309   17725.6065
+##            X8.8         X8.9        X8.10         X9.1         X9.2
+## 1             2            2            2            1            1
+## 2             8            8            8            9            9
+## 3             8            8            8           12           12
+## 14    3259.7042    2178.2957    1612.6917    3104.3817    2302.8018
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   40620.5428   27205.8960   35211.7355   27515.0727   42167.8269
+## 31    8923.5228   11139.6164    9499.2554   10052.0863   10084.5435
+## 4    49548.9635   44694.4717   55458.7038   37258.5278   47252.7818
+## 5    16274.9108   12681.7156   17851.4361   12396.2625   12877.3790
+##            X9.3         X9.4         X9.5         X9.6         X9.7
+## 1             1            1            1            2            2
+## 2             9            9            9            9            9
+## 3            12           12           12           12           12
+## 14    1669.0013    1943.9478    2509.6361    2594.4257    2417.0276
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   22802.5729   28154.5848   23661.2598   40176.8066   27525.2985
+## 31    8019.7218    9208.8476   12075.6040    8632.2730   10279.8178
+## 4    50310.1439   50824.7802   33861.4708   21824.1567   41622.4399
+## 5    16021.4916   16682.1509   11545.3308   13057.4590   18491.8933
+##            X9.8         X9.9        X9.10        X10.1        X10.2
+## 1             2            2            2            1            1
+## 2             9            9            9           10           10
+## 3            12           12           12           15           15
+## 14    2823.3098    2427.6707    2323.4552 4.931640e+03 2.580926e+03
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   55318.9912   19773.6083   26281.2463 3.803529e+04 9.348853e+04
+## 31   10249.8927    7175.5229    9133.0329 8.955081e+03 9.971469e+03
+## 4    44041.3622   41389.4134   38642.8130 4.533420e+04 5.333024e+04
+## 5    20000.7230   18798.8763   18197.9797 1.612145e+04 1.617697e+04
+##           X10.3        X10.4        X10.5        X10.6        X10.7
+## 1             1            1            1            2            2
+## 2            10           10           10           10           10
+## 3            15           15           15           15           15
+## 14 2.957264e+03 4.931640e+03 4.931640e+03 4.106450e+03 3.791994e+03
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 3.387132e+04 4.706431e+04 2.671882e+04 2.054585e+04 4.026237e+04
+## 31 1.273101e+04 1.133352e+04 6.630398e+03 3.929941e+03 8.896966e+03
+## 4  4.084886e+04 5.327472e+04 4.432993e+04 2.456119e+04 4.840988e+04
+## 5  1.691849e+04 1.575817e+04 1.576261e+04 1.643388e+04 2.215846e+04
+##           X10.8        X10.9       X10.10        X11.1        X11.2
+## 1             2            2            2            1            1
+## 2            10           10           10           11           11
+## 3            15           15           15           24           24
+## 14 2.394015e+03 2.995298e+03 4.410297e+03    3786.8261    2450.1092
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 3.771719e+04 4.048115e+04 6.071908e+04   75174.0072  142272.1077
+## 31 8.235472e+03 1.032865e+04 9.014239e+03   23289.5757   22099.4459
+## 4  4.149762e+04 3.751521e+04 3.916361e+04   39974.8729   52580.9254
+## 5  2.004001e+04 1.785776e+04 2.199665e+04   11325.3370   14728.8059
+##           X11.3        X11.4        X11.5        X11.6        X11.7
+## 1             1            1            1            2            2
+## 2            11           11           11           11           11
+## 3            24           24           24           24           24
+## 14    3631.7646    3694.9784    4251.2509    3846.2226    3426.6954
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   45916.3893   34609.0358   39799.0796   61092.9545   31213.7897
+## 31   12292.4884    8308.3776    9714.6148    6527.4914    8221.9684
+## 4    46465.7693   57928.3884   49312.1700   26414.1202   37791.4269
+## 5    16736.9962   17799.8468   17262.3943   16750.8836   11562.0545
+##           X11.8        X11.9       X11.10        X12.1        X12.2
+## 1             2            2            2            1            1
+## 2            11           11           11           12           12
+## 3            24           24           24           30           30
+## 14    4294.9415    3579.1423    2801.7475 2.412480e+03    3014.9726
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   62966.3761   81113.8716  146962.5562 2.444179e+04   22656.5926
+## 31    7181.3820   14319.5488    9286.2912 5.353311e+03    6072.4709
+## 4    40129.3740   46762.5877   42765.1208 4.232468e+04   47900.9869
+## 5    17690.5999   14200.5060   22494.7335 1.386842e+04   16167.4516
+##           X12.3        X12.4        X12.5        X12.6        X12.7
+## 1             1            1            1            2            2
+## 2            12           12           12           12           12
+## 3            30           30           30           30           30
+## 14    2499.3959    3184.6637    3447.7610    2943.2554    3266.5058
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   26310.1731   19663.2144   17304.5485   25439.9582   20441.0797
+## 31   11391.4062    7396.7657    7203.8244    5097.7827    4870.6579
+## 4    55117.6536   60017.8909   49888.4775   27109.7985   40987.6165
+## 5    16476.0118   20502.5317   19034.4862   17630.8662   23133.3750
+##           X12.8        X12.9       X12.10        X13.1        X13.2
+## 1             2            2            2            1            1
+## 2            12           12           12           13           13
+## 3            30           30           30           36           36
+## 14    2394.0848    3662.6803    2141.3351    2041.6406    4122.3177
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   17874.0162   22993.7204   97347.6495   34308.4041   36726.4892
+## 31    3337.9556    5590.1410    5994.4761    4716.3373    7950.8900
+## 4    38833.7715   46435.8170   38336.9415   39936.8587   51126.5511
+## 5    22709.3805   21484.3154   23133.3750   18401.1806   21490.9623
+##           X13.3        X13.4        X13.5        X13.6        X13.7
+## 1             1            1            1            2            2
+## 2            13           13           13           13           13
+## 3            36           36           36           36           36
+## 14    3089.5949    2128.9795    1803.5259    1980.3018    1663.6182
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   40972.7242   25053.4760   18872.9087   17986.2127   17973.6294
+## 31   10058.5237    9082.4223    7206.7749    3402.9196    3040.9171
+## 4    57031.2540   59274.6392   49070.7728   23060.6726   37083.7883
+## 5    20144.4416   21354.3859   19556.9586   14602.3514   22018.3589
+##           X13.8        X13.9       X13.10        X14.1        X14.2
+## 1             2            2            2            1            1
+## 2            13           13           13           14           14
+## 3            36           36           36           48           48
+## 14 3.140954e+03    3716.8585    3804.5102    1852.6829    2982.4361
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 2.634719e+04   16413.0403   67902.0059   38769.8847   67228.2332
+## 31 4.572209e+03    3943.9430    8364.9650    9038.7290    9639.1306
+## 4  3.758764e+04   38408.3504   42264.3040   45881.4797   48798.8977
+## 5  2.037819e+04   17414.1017   20419.7985   20173.8645   16305.4559
+##           X14.3        X14.4        X14.5        X14.6        X14.7
+## 1             1            1            1            2            2
+## 2            14           14           14           14           14
+## 3            48           48           48           48           48
+## 14    2776.7269    1446.9467    2898.6008    2577.6334    1728.8296
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21   36668.7583   50382.2158   36389.7581   65603.2122   30331.9468
+## 31    9332.6231    7580.8794   13940.9068    6885.6864    4835.5802
+## 4    53759.4183   51713.7508   41652.1014   26645.2014   43304.8501
+## 5    20309.8359   15698.9636   12967.0660   15821.2225   15643.2164
+##           X14.8        X14.9       X14.10
+## 1             2            2            2
+## 2            14           14           14
+## 3            48           48           48
+## 14 3.392003e+03    2340.2763    3461.0021
+## 12         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 13         &lt;NA&gt;         &lt;NA&gt;         &lt;NA&gt;
+## 21 5.168826e+04   65832.6529   78992.6889
+## 31 4.889092e+03   10104.7391    9116.5366
+## 4  4.003441e+04   42366.3993   35571.1420
+## 5  1.482644e+04   16675.6523   15238.7700</code></pre>
+</div>
+<div id="getabso" class="section level2">
+<h2><code>GetAbso</code></h2>
+<p>A function to get the absorbed drug constitutes by similarity analysis on the list of differential compounds and the list of drug constitutes:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">GetAbso</span>(drugData, A, simidata,<span class="dt">sim =</span> <span class="dv">80</span>, <span class="dt">filepath=</span><span class="kw">getwd</span>(),<span class="dt">design =</span> design)</code></pre></div>
+<pre><code>##                     Name      ID      m.z   RT.min.       X0.1       X0.2
+## 1                 gender             &lt;NA&gt;      &lt;NA&gt;          1          1
+## 2                  group             &lt;NA&gt;      &lt;NA&gt;          0          0
+## 3          timepoints(h)             &lt;NA&gt;      &lt;NA&gt;          0          0
+## 14 octanoyl-rac-glycerol inx0001 219.1401 3.5638000   4180.330   5075.237
+##           X0.3        X0.4      X0.5        X0.6        X0.7        X0.8
+## 1            1           1         1           2           2           2
+## 2            0           0         0           0           0           0
+## 3            0           0         0           0           0           0
+## 14   4765.7406   4081.1987  2735.835   4993.6567   4433.1691   4149.5551
+##          X0.9      X0.10         X1.1         X1.2         X1.3
+## 1           2          2            1            1            1
+## 2           0          0            1            1            1
+## 3           0          0        0.083        0.083        0.083
+## 14   3543.962   3309.242 3.720998e+03 1.617713e+03 2.905334e+03
+##            X1.4         X1.5         X1.6         X1.7         X1.8
+## 1             1            1            2            2            2
+## 2             1            1            1            1            1
+## 3         0.083        0.083        0.083        0.083        0.083
+## 14 4.732409e+03 3.777234e+03 1.904859e+03 2.830200e+03 2.992664e+03
+##            X1.9        X1.10         X2.1         X2.2         X2.3
+## 1             2            2            1            1            1
+## 2             1            1            2            2            2
+## 3         0.083        0.083         0.25         0.25         0.25
+## 14 2.832788e+03 4.350362e+03 3.033735e+03 3.858627e+03 3.880638e+03
+##            X2.4         X2.5         X2.6         X2.7         X2.8
+## 1             1            1            2            2            2
+## 2             2            2            2            2            2
+## 3          0.25         0.25         0.25         0.25         0.25
+## 14 4.293698e+03 2.724455e+03 4.105260e+03 4.403498e+03 2.925096e+03
+##            X2.9        X2.10         X3.1         X3.2         X3.3
+## 1             2            2            1            1            1
+## 2             2            2            3            3            3
+## 3          0.25         0.25          0.5          0.5          0.5
+## 14 4.931640e+03 4.606038e+03 4.211090e+03 2.375966e+03 2.337628e+03
+##            X3.4         X3.5         X3.6         X3.7         X3.8
+## 1             1            1            2            2            2
+## 2             3            3            3            3            3
+## 3           0.5          0.5          0.5          0.5          0.5
+## 14 3.525279e+03 3.716061e+03 3.870560e+03 3.280670e+03 2.743306e+03
+##            X3.9        X3.10         X4.1         X4.2         X4.3
+## 1             2            2            1            1            1
+## 2             3            3            4            4            4
+## 3           0.5          0.5            1            1            1
+## 14 3.393244e+03 4.839369e+03    2646.1411    3448.7697    2674.3427
+##            X4.4         X4.5         X4.6         X4.7         X4.8
+## 1             1            1            2            2            2
+## 2             4            4            4            4            4
+## 3             1            1            1            1            1
+## 14    3280.8034    4711.6220    3008.1355    4086.1531    3065.9686
+##            X4.9        X4.10         X5.1         X5.2         X5.3
+## 1             2            2            1            1            1
+## 2             4            4            5            5            5
+## 3             1            1            2            2            2
+## 14 3.318351e+03    2673.8852    3625.4119    2496.3978    1757.0399
+##            X5.4         X5.5        X5.6        X5.7         X5.8
+## 1             1            1           2           2            2
+## 2             5            5           5           5            5
+## 3             2            2           2           2            2
+## 14    2564.2173    2805.7129   1153.0243   2927.9869 2.840386e+03
+##            X5.9        X5.10         X6.1         X6.2         X6.3
+## 1             2            2            1            1            1
+## 2             5            5            6            6            6
+## 3             2            2            4            4            4
+## 14    2265.3794    2127.2873 2.223131e+03 3.315628e+03 1.634174e+03
+##            X6.4         X6.5         X6.6         X6.7         X6.8
+## 1             1            1            2            2            2
+## 2             6            6            6            6            6
+## 3             4            4            4            4            4
+## 14 2.398416e+03 3.421965e+03 2.429446e+03   2661.69124 2.496147e+03
+##            X6.9        X6.10         X7.1         X7.2         X7.3
+## 1             2            2            1            1            1
+## 2             6            6            7            7            7
+## 3             4            4            6            6            6
+## 14 3.292361e+03 2.549347e+03    2569.5941    2091.5383    3224.4716
+##            X7.4         X7.5         X7.6         X7.7         X7.8
+## 1             1            1            2            2            2
+## 2             7            7            7            7            7
+## 3             6            6            6            6            6
+## 14    1069.9343    2833.4270    3281.9023    2852.8213 3.122827e+03
+##            X7.9        X7.10         X8.1         X8.2         X8.3
+## 1             2            2            1            1            1
+## 2             7            7            8            8            8
+## 3             6            6            8            8            8
+## 14    2533.6538    1949.3774    4176.2008    2620.2380    2913.3486
+##            X8.4         X8.5         X8.6         X8.7         X8.8
+## 1             1            1            2            2            2
+## 2             8            8            8            8            8
+## 3             8            8            8            8            8
+## 14    2156.3241    2800.5507    1448.1588    3355.5500    3259.7042
+##            X8.9        X8.10         X9.1         X9.2         X9.3
+## 1             2            2            1            1            1
+## 2             8            8            9            9            9
+## 3             8            8           12           12           12
+## 14    2178.2957    1612.6917    3104.3817    2302.8018    1669.0013
+##            X9.4         X9.5         X9.6         X9.7         X9.8
+## 1             1            1            2            2            2
+## 2             9            9            9            9            9
+## 3            12           12           12           12           12
+## 14    1943.9478    2509.6361    2594.4257    2417.0276    2823.3098
+##            X9.9        X9.10        X10.1        X10.2        X10.3
+## 1             2            2            1            1            1
+## 2             9            9           10           10           10
+## 3            12           12           15           15           15
+## 14    2427.6707    2323.4552 4.931640e+03 2.580926e+03 2.957264e+03
+##           X10.4        X10.5        X10.6        X10.7        X10.8
+## 1             1            1            2            2            2
+## 2            10           10           10           10           10
+## 3            15           15           15           15           15
+## 14 4.931640e+03 4.931640e+03 4.106450e+03 3.791994e+03 2.394015e+03
+##           X10.9       X10.10        X11.1        X11.2        X11.3
+## 1             2            2            1            1            1
+## 2            10           10           11           11           11
+## 3            15           15           24           24           24
+## 14 2.995298e+03 4.410297e+03    3786.8261    2450.1092    3631.7646
+##           X11.4        X11.5        X11.6        X11.7        X11.8
+## 1             1            1            2            2            2
+## 2            11           11           11           11           11
+## 3            24           24           24           24           24
+## 14    3694.9784    4251.2509    3846.2226    3426.6954    4294.9415
+##           X11.9       X11.10        X12.1        X12.2        X12.3
+## 1             2            2            1            1            1
+## 2            11           11           12           12           12
+## 3            24           24           30           30           30
+## 14    3579.1423    2801.7475 2.412480e+03    3014.9726    2499.3959
+##           X12.4        X12.5        X12.6        X12.7        X12.8
+## 1             1            1            2            2            2
+## 2            12           12           12           12           12
+## 3            30           30           30           30           30
+## 14    3184.6637    3447.7610    2943.2554    3266.5058    2394.0848
+##           X12.9       X12.10        X13.1        X13.2        X13.3
+## 1             2            2            1            1            1
+## 2            12           12           13           13           13
+## 3            30           30           36           36           36
+## 14    3662.6803    2141.3351    2041.6406    4122.3177    3089.5949
+##           X13.4        X13.5        X13.6        X13.7        X13.8
+## 1             1            1            2            2            2
+## 2            13           13           13           13           13
+## 3            36           36           36           36           36
+## 14    2128.9795    1803.5259    1980.3018    1663.6182 3.140954e+03
+##           X13.9       X13.10        X14.1        X14.2        X14.3
+## 1             2            2            1            1            1
+## 2            13           13           14           14           14
+## 3            36           36           48           48           48
+## 14    3716.8585    3804.5102    1852.6829    2982.4361    2776.7269
+##           X14.4        X14.5        X14.6        X14.7        X14.8
+## 1             1            1            2            2            2
+## 2            14           14           14           14           14
+## 3            48           48           48           48           48
+## 14    1446.9467    2898.6008    2577.6334    1728.8296 3.392003e+03
+##           X14.9       X14.10
+## 1             2            2
+## 2            14           14
+## 3            48           48
+## 14    2340.2763    3461.0021</code></pre>
+</div>
+<div id="getsecdabso" class="section level2">
+<h2><code>GetSecdAbso</code></h2>
+<p>A function to get secondary metabolites of the absorbed drug constitutes:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">GetSecdAbso</span>(A,B,C,simidata,<span class="dt">sim=</span><span class="dv">80</span>,<span class="dt">filepath=</span><span class="kw">getwd</span>(),design)</code></pre></div>
+<pre><code>##                   Name        ID      m.z    RT.min. X0.1 X0.2 X0.3 X0.4
+## 1               gender               &lt;NA&gt;       &lt;NA&gt;    1    1    1    1
+## 2                group               &lt;NA&gt;       &lt;NA&gt;    0    0    0    0
+## 3        timepoints(h)               &lt;NA&gt;       &lt;NA&gt;    0    0    0    0
+## 6       hyocholic acid   inx0005 407.2801  3.2258500 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 7    isoliquiritigenin HMDB30808 255.0682  1.4637000 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 8     stearidonic acid HMDB06547 275.2011  4.0438833 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 9  2-aminobutyric acid HMDB00452 104.0545  0.7084167 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+## 10                urea HMDB00294 100.0000  7.1697798 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
+##    X0.5 X0.6 X0.7 X0.8 X0.9 X0.10         X1.1         X1.2         X1.3
+## 1     1    2    2    2    2     2            1            1            1
+## 2     0    0    0    0    0     0            1            1            1
+## 3     0    0    0    0    0     0        0.083        0.083        0.083
+## 6  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;  &lt;NA&gt; 2.784204e+02 2.784204e+02 2.784204e+02
+## 7  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;  &lt;NA&gt; 1.370141e+03 3.178774e+03 5.442983e+02
+## 8  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;  &lt;NA&gt; 2.247636e+01 2.247636e+01 2.247636e+01
+## 9  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;  &lt;NA&gt; 2.168240e+03 2.676821e+03 2.284670e+03
+## 10 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;  &lt;NA&gt; 3.273674e+06 4.605178e+06 2.243755e+06
+##            X1.4         X1.5         X1.6         X1.7         X1.8
+## 1             1            1            2            2            2
+## 2             1            1            1            1            1
+## 3         0.083        0.083        0.083        0.083        0.083
+## 6  2.784204e+02 2.784204e+02 2.784204e+02 2.784204e+02 2.784204e+02
+## 7  1.379580e+03 3.237247e+03 7.937158e+02 1.550471e+03 1.550471e+03
+## 8  2.247636e+01 2.247636e+01 2.247636e+01 2.247636e+01 2.247636e+01
+## 9  2.709623e+03 2.245499e+03 2.249226e+03 2.030242e+03 1.910813e+03
+## 10 3.408362e+06 2.834098e+06 3.589067e+06 3.199218e+06 1.909982e+06
+##            X1.9        X1.10         X2.1         X2.2         X2.3
+## 1             2            2            1            1            1
+## 2             1            1            2            2            2
+## 3         0.083        0.083         0.25         0.25         0.25
+## 6  2.784204e+02 2.784204e+02 3.578969e+02 3.489997e+02 3.205295e+02
+## 7  1.012269e+03 8.877423e+02 3.552790e+03 4.362738e+03 6.527250e+03
+## 8  2.247636e+01 2.247636e+01 5.389544e+01 5.389544e+01 5.389544e+01
+## 9  1.975678e+03 2.125965e+03 1.021374e+03 2.540928e+03 2.596432e+03
+## 10 3.855880e+06 3.213246e+06 3.848528e+06 5.265081e+06 1.587340e+06
+##            X2.4         X2.5         X2.6         X2.7         X2.8
+## 1             1            1            2            2            2
+## 2             2            2            2            2            2
+## 3          0.25         0.25         0.25         0.25         0.25
+## 6  3.205295e+02 3.205295e+02 3.205295e+02 6.983260e+02 3.205295e+02
+## 7  4.939517e+03 1.201432e+04 4.768880e+03 3.791118e+03 5.047187e+03
+## 8  5.389544e+01 5.389544e+01 5.389544e+01 5.389544e+01 5.389544e+01
+## 9  2.709623e+03 2.118093e+03 2.120029e+03 2.357740e+03 1.424533e+03
+## 10 1.818286e+06 1.717971e+06 1.174493e+06 6.135470e+05 2.533136e+06
+##            X2.9        X2.10         X3.1         X3.2         X3.3
+## 1             2            2            1            1            1
+## 2             2            2            3            3            3
+## 3          0.25         0.25          0.5          0.5          0.5
+## 6  7.100481e+01 1.264203e+02 1.887861e+02 1.887861e+02 1.887861e+02
+## 7  4.446028e+03 3.474077e+03 1.462294e+04 8.090344e+03 1.015265e+04
+## 8  5.389544e+01 5.389544e+01 2.247636e+01 2.247636e+01 2.247636e+01
+## 9  1.229884e+03 2.709623e+03 1.745642e+03 1.856963e+03 2.215781e+03
+## 10 2.784068e+06 2.976258e+06 6.534630e+05 7.868380e+05 1.086657e+06
+##            X3.4         X3.5         X3.6         X3.7         X3.8
+## 1             1            1            2            2            2
+## 2             3            3            3            3            3
+## 3           0.5          0.5          0.5          0.5          0.5
+## 6  1.887861e+02 1.887861e+02 1.887861e+02 1.887861e+02 1.887861e+02
+## 7  9.253099e+03 1.570578e+04 1.205226e+04 5.949388e+03 9.335844e+03
+## 8  2.247636e+01 2.247636e+01 2.247636e+01 2.247636e+01 2.247636e+01
+## 9  2.149064e+03 1.194508e+03 1.282945e+03 1.798378e+03 1.438931e+03
+## 10 7.938860e+05 9.037070e+05 9.934000e+05 3.508810e+05 3.289187e+06
+##            X3.9        X3.10         X4.1         X4.2         X4.3
+## 1             2            2            1            1            1
+## 2             3            3            4            4            4
+## 3           0.5          0.5            1            1            1
+## 6  1.887861e+02 1.887861e+02     385.0864     385.4431     385.4431
+## 7  9.693643e+03 9.866803e+03    8864.8366    9168.3392    7920.8095
+## 8  2.247636e+01 2.247636e+01     101.9314     101.9314     101.9314
+## 9  1.746348e+03 1.342716e+03    1323.4021    2193.0985    2430.9826
+## 10 2.692636e+06 2.394859e+06  882732.0000 1043082.0000 2654494.0000
+##            X4.4         X4.5         X4.6         X4.7         X4.8
+## 1             1            1            2            2            2
+## 2             4            4            4            4            4
+## 3             1            1            1            1            1
+## 6      385.7997     385.4431     385.4431     385.4431     385.4431
+## 7     8249.3035   15848.4163    8067.7437   11979.5423   10973.7672
+## 8      101.9314     101.9314     101.9314     101.9314     101.9314
+## 9     1786.0457    1955.4832    1874.8139    1262.5695    1677.9472
+## 10 1059533.0000  934680.0000 1054942.0000 1103732.0000  960388.0000
+##            X4.9        X4.10         X5.1         X5.2         X5.3
+## 1             2            2            1            1            1
+## 2             4            4            5            5            5
+## 3             1            1            2            2            2
+## 6  3.854431e+02     385.4431     374.5935     235.0687     235.0687
+## 7  1.067116e+04    7477.9595   10010.1282    6500.5575    5321.4688
+## 8  6.857615e+01     135.2867     195.2622     195.2622     195.2622
+## 9  1.570819e+03    2083.4629    1345.7202    1429.7082    1308.6155
+## 10 1.199171e+06  961386.0000  815521.0000 1125906.0000  956859.0000
+##            X5.4         X5.5        X5.6        X5.7         X5.8
+## 1             1            1           2           2            2
+## 2             5            5           5           5            5
+## 3             2            2           2           2            2
+## 6      235.0687     235.0687    247.1879    310.4244 8.068912e+00
+## 7     2282.2136    8061.4780  14492.2275   6312.9234 4.548317e+03
+## 8      195.2622     195.2622    195.2622    195.2622 1.952622e+02
+## 9     1066.4951    1524.2739   1540.6572   1232.6300 1.528981e+03
+## 10 1112064.0000 1203212.0000 865023.0000 526880.0000 3.990593e+06
+##            X5.9        X5.10         X6.1         X6.2         X6.3
+## 1             2            2            1            1            1
+## 2             5            5            6            6            6
+## 3             2            2            4            4            4
+## 6      235.0687     235.0687 6.069089e+02 5.469151e+02 5.469151e+02
+## 7     4692.2979    8462.2400 1.588454e+04 1.006271e+04 1.449134e+04
+## 8      195.2622     195.2622 7.898322e+01 7.898322e+01 7.898322e+01
+## 9     1280.4679    1140.9415 1.373997e+03 9.228641e+02 1.316421e+03
+## 10 1576344.0000 4330585.0000 2.218247e+06 3.507028e+06 2.218247e+06
+##            X6.4         X6.5         X6.6         X6.7         X6.8
+## 1             1            1            2            2            2
+## 2             6            6            6            6            6
+## 3             4            4            4            4            4
+## 6  5.469151e+02 4.869212e+02 5.469151e+02    546.91506 5.469151e+02
+## 7  1.405494e+04 1.588454e+04 1.470281e+04  15884.54430 1.466780e+03
+## 8  7.898322e+01 7.898322e+01 7.898322e+01     78.98322 7.898322e+01
+## 9  1.632163e+03 1.593497e+03 1.501294e+03   1596.39534 1.567877e+03
+## 10 3.895619e+06 1.107165e+06 3.769888e+06 842867.00000 1.059359e+06
+##            X6.9        X6.10         X7.1         X7.2         X7.3
+## 1             2            2            1            1            1
+## 2             6            6            7            7            7
+## 3             4            4            6            6            6
+## 6  5.469151e+02 5.469151e+02     460.8919     276.9826     276.9826
+## 7  1.357760e+04 1.382118e+04    4765.3690    3683.2625     919.3350
+## 8  7.898322e+01 7.898322e+01     178.2817     178.2817     178.2817
+## 9  1.069840e+03 1.086028e+03    1781.4827     795.7628    1522.7288
+## 10 1.247097e+06 2.316951e+06  741986.0000 1241804.0000 1708205.0000
+##            X7.4         X7.5         X7.6         X7.7         X7.8
+## 1             1            1            2            2            2
+## 2             7            7            7            7            7
+## 3             6            6            6            6            6
+## 6      276.9826     276.9826     276.9826     276.9826 9.307326e+01
+## 7     4562.3927    7174.1774    4195.7559    5681.9093 1.083377e+04
+## 8      178.2817     178.2817     178.2817     178.2817 1.782817e+02
+## 9     1810.1939    1597.6780    1671.7275    1020.1537 1.419703e+03
+## 10  755829.0000  544230.0000  759269.0000  559666.0000 6.651350e+05
+##            X7.9        X7.10         X8.1         X8.2         X8.3
+## 1             2            2            1            1            1
+## 2             7            7            8            8            8
+## 3             6            6            8            8            8
+## 6      276.9826     276.9826    1052.3366     208.9474     744.4353
+## 7    11442.2029    3941.0242     499.3623    1073.4931     493.2948
+## 8      178.2817     178.2817     165.2253     165.2253     165.2253
+## 9     1085.0780    2142.9126    2709.6230    1646.5112    2259.9431
+## 10 1111327.0000 2411841.0000 2927240.0000 2979346.0000 2780058.0000
+##            X8.4         X8.5         X8.6         X8.7         X8.8
+## 1             1            1            2            2            2
+## 2             8            8            8            8            8
+## 3             8            8            8            8            8
+## 6      627.3316     627.3316     627.3316     424.2711     148.1634
+## 7     2909.7819    4034.3601    1724.5350     960.8781    5755.2843
+## 8      165.2253     213.4903     165.2253     165.2253     165.2253
+## 9     1935.4835    1576.4472    2080.9462    2366.2413     856.8270
+## 10 1171232.0000 1232374.0000 1008573.0000 1037932.0000 2235284.0000
+##            X8.9        X8.10         X9.1         X9.2         X9.3
+## 1             2            2            1            1            1
+## 2             8            8            9            9            9
+## 3             8            8           12           12           12
+## 6      627.3316     627.3316     936.1903     564.1867     564.1867
+## 7     7132.6273    2369.1902     401.4779     331.4751     705.8152
+## 8      165.2253     116.9604     196.6458     416.0562     416.0562
+## 9     1366.5753    2159.2240    2504.8321     961.5433    1940.8652
+## 10 3087811.0000 4278483.0000  917490.0000 1056530.0000 2189306.0000
+##            X9.4         X9.5         X9.6         X9.7         X9.8
+## 1             1            1            2            2            2
+## 2             9            9            9            9            9
+## 3            12           12           12           12           12
+## 6      564.1867     564.1867     564.1867     564.1867     192.1831
+## 7     1247.0930    2914.2993     426.9362     928.1585     569.4678
+## 8      416.0562     416.0562     416.0562     416.0562     416.0562
+## 9     1764.4258    1858.6772    2220.4156    2709.6230    1411.1427
+## 10 1142309.0000 1930460.0000 2915531.0000 2805776.0000 1104783.0000
+##            X9.9        X9.10        X10.1        X10.2        X10.3
+## 1             2            2            1            1            1
+## 2             9            9           10           10           10
+## 3            12           12           15           15           15
+## 6      564.1867     564.1867 5.299150e+00 5.299150e+00 5.299150e+00
+## 7     1214.9081     629.2542 7.293924e+02 7.987547e+02 7.566690e+02
+## 8      416.0562     416.0562 1.817239e+02 4.154151e+01 1.817239e+02
+## 9     1341.7089    2572.7710 2.020087e+03 2.319318e+03 1.925388e+03
+## 10 2281254.0000 4531902.0000 1.143838e+06 1.668506e+06 5.605365e+06
+##           X10.4        X10.5        X10.6        X10.7        X10.8
+## 1             1            1            2            2            2
+## 2            10           10           10           10           10
+## 3            15           15           15           15           15
+## 6  5.299150e+00 5.299150e+00 5.299150e+00 5.299150e+00 5.299150e+00
+## 7  5.346891e+02 1.411588e+03 3.060022e+02 3.076908e+02 7.466542e+01
+## 8  3.124496e+02 1.817239e+02 1.817239e+02 2.699712e+02 1.029333e+02
+## 9  1.631404e+03 1.627196e+03 1.766400e+03 1.498653e+03 1.194853e+03
+## 10 2.855181e+06 2.628458e+06 1.751421e+06 4.423157e+06 2.615589e+06
+##           X10.9       X10.10        X11.1        X11.2        X11.3
+## 1             2            2            1            1            1
+## 2            10           10           11           11           11
+## 3            15           15           24           24           24
+## 6  5.299150e+00 5.299150e+00    1052.3366    1052.3366    1052.3366
+## 7  9.333935e+02 1.441079e+03     519.4658     138.3214     355.6367
+## 8  1.817239e+02 1.817239e+02     225.2154     225.2154     225.2154
+## 9  1.509416e+03 2.238796e+03    1415.0529    1802.2512    1861.9488
+## 10 2.497827e+06 3.362469e+06 5567127.0000 4807600.0000 5570475.0000
+##           X11.4        X11.5        X11.6        X11.7        X11.8
+## 1             1            1            2            2            2
+## 2            11           11           11           11           11
+## 3            24           24           24           24           24
+## 6     1052.3366    1052.3366     864.8001    1052.3366     274.7085
+## 7      233.6321     757.2115     519.4658     241.7457     519.4658
+## 8      225.2154     225.2154     225.2154     187.2952     225.2154
+## 9     1607.0761    1704.0346    1886.1417    1542.3639     978.0477
+## 10 4761617.0000 2110272.0000 1091591.0000 1780644.0000 2183886.0000
+##           X11.9       X11.10        X12.1        X12.2        X12.3
+## 1             2            2            1            1            1
+## 2            11           11           12           12           12
+## 3            24           24           30           30           30
+## 6     1052.3366    1052.3366 1.022622e+03     889.8966     252.2344
+## 7     1156.3891     753.3245 5.750406e+01    1507.9037     623.6827
+## 8      303.7545     184.5964 2.985803e+02     162.7357     416.0562
+## 9      885.6081    1274.9299 1.871969e+03    1169.5236    1073.9279
+## 10 4742487.0000 1058786.0000 2.859222e+06 3956591.0000 4524865.0000
+##           X12.4        X12.5        X12.6        X12.7        X12.8
+## 1             1            1            2            2            2
+## 2            12           12           12           12           12
+## 3            30           30           30           30           30
+## 6      889.8966     889.8966     889.8966     889.8966    1052.3366
+## 7      220.3680    1193.5548     658.5670     623.6827     623.6827
+## 8      298.5803     298.5803     298.5803     225.1035     298.5803
+## 9     1664.1779    1249.8718    1433.8242    1066.0946    1140.9290
+## 10  336349.0000 2022739.0000 3297338.0000 2506869.0000 3931178.0000
+##           X12.9       X12.10        X13.1        X13.2        X13.3
+## 1             2            2            1            1            1
+## 2            12           12           13           13           13
+## 3            30           30           36           36           36
+## 6      889.8966     889.8966     429.2066     830.2536     881.8535
+## 7      124.4961     603.3856     935.0894     501.2326     935.0894
+## 8      298.5803     298.5803     206.8002     416.0562     416.0562
+## 9      939.2061    1368.8430    1751.6133     878.9021    1804.2838
+## 10 3735142.0000 4330657.0000 3434255.0000 2616869.0000 3276844.0000
+##           X13.4        X13.5        X13.6        X13.7        X13.8
+## 1             1            1            2            2            2
+## 2            13           13           13           13           13
+## 3            36           36           36           36           36
+## 6      443.4000     443.4000      16.0817     483.7999 1.920454e+01
+## 7      935.0894    1677.8042     119.5775     935.0894 9.350894e+02
+## 8      416.0562     416.0562     416.0562     416.0562 4.160562e+02
+## 9     2081.1306    1262.9347    1698.5452    1474.8592 1.494758e+03
+## 10 1809303.0000 2134561.0000 2141069.0000  707808.0000 1.952686e+06
+##           X13.9       X13.10        X14.1        X14.2        X14.3
+## 1             2            2            1            1            1
+## 2            13           13           14           14           14
+## 3            36           36           48           48           48
+## 6      443.4000     443.4000    1052.3366     715.0406     576.2052
+## 7      935.0894    1441.7434    1054.2212    1160.2287     224.5996
+## 8      416.0562     416.0562     214.8719     214.8719     214.8719
+## 9      869.5958    1934.3173    1436.0103    1649.2100    1854.4869
+## 10  665453.0000 2248179.0000 1783857.0000 2928799.0000 2932614.0000
+##           X14.4        X14.5        X14.6        X14.7        X14.8
+## 1             1            1            2            2            2
+## 2            14           14           14           14           14
+## 3            48           48           48           48           48
+## 6      576.2052     576.2052     576.2052     287.8035 9.674108e+01
+## 7     1054.2212    3518.8923     422.0578    1054.2212 1.054221e+03
+## 8      214.8719     214.8719     214.8719     214.8719 2.148719e+02
+## 9     1138.8949    1449.6058    1220.1843    1452.1421 9.352852e+02
+## 10  768613.0000 1146017.0000 3502838.0000 1770733.0000 1.516211e+06
+##           X14.9       X14.10
+## 1             2            2
+## 2            14           14
+## 3            48           48
+## 6      576.2052     576.2052
+## 7      416.2823     583.2665
+## 8      214.8719     214.8719
+## 9      908.0581    1193.4161
+## 10  998402.0000 2259062.0000</code></pre>
+</div>
+<div id="pks" class="section level2">
+<h2><code>PKs</code></h2>
+<p>A function to calculate the 7 pharmacokinetics parameters (Tmax, Cmax, AUC, CL, Tlast, Tfirst, Cmin) and plot the time-intensity curves for specified compounds.</p>
+<p>A list of metabolites and 7 pharmacokinetics parameters (Tmax,Cmax,AUC,CL,Tlast,Tfirst,Cmin) of specified compound:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;B&quot;</span>)
+<span class="kw">data</span>(<span class="st">&quot;design&quot;</span>)
+pks&lt;-<span class="kw">PKs</span>(B,<span class="dt">d.point=</span><span class="st">&quot;mean&quot;</span>,<span class="dt">d.ebar=</span><span class="st">&quot;SE&quot;</span>,<span class="dt">filepath=</span><span class="kw">getwd</span>(),<span class="dt">design=</span>design)
+knitr::<span class="kw">kable</span>(pks[<span class="kw">c</span>(<span class="dv">1</span>:<span class="dv">10</span>),],<span class="dt">align =</span> <span class="st">'c'</span>)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="center">Name</th>
+<th align="center">ID</th>
+<th align="center">m.z</th>
+<th align="center">R.T.min.</th>
+<th align="center">Tmax</th>
+<th align="center">Tlast</th>
+<th align="center">Tfirst</th>
+<th align="center">Cmax</th>
+<th align="center">Cmin</th>
+<th align="center">AUC</th>
+<th align="center">CL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>14</td>
+<td align="center">octanoyl-rac-glycerol</td>
+<td align="center">inx0001</td>
+<td align="center">219.1401</td>
+<td align="center">3.5638000</td>
+<td align="center">0</td>
+<td align="center">14</td>
+<td align="center">0</td>
+<td align="center">4126.793</td>
+<td align="center">2411.566</td>
+<td align="center">42776.5376</td>
+<td align="center">0.0024546</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td align="center">hippuric acid</td>
+<td align="center">HMDB00714</td>
+<td align="center">178.0503</td>
+<td align="center">0.7566000</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">5854.191</td>
+<td align="center">0.000</td>
+<td align="center">2927.0957</td>
+<td align="center">0.0358717</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td align="center">hexadecanedioic acid</td>
+<td align="center">HMDB00672</td>
+<td align="center">285.2062</td>
+<td align="center">4.0334167</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1788.707</td>
+<td align="center">0.000</td>
+<td align="center">894.3536</td>
+<td align="center">0.1174032</td>
+</tr>
+<tr class="even">
+<td>21</td>
+<td align="center">n-dodecanoic acid</td>
+<td align="center">HMDB00638</td>
+<td align="center">199.1693</td>
+<td align="center">5.2730000</td>
+<td align="center">6</td>
+<td align="center">14</td>
+<td align="center">0</td>
+<td align="center">111657.052</td>
+<td align="center">24738.157</td>
+<td align="center">795079.4137</td>
+<td align="center">0.0001321</td>
+</tr>
+<tr class="odd">
+<td>31</td>
+<td align="center">3-hydroxybutyric acid</td>
+<td align="center">HMDB00357</td>
+<td align="center">103.0400</td>
+<td align="center">0.6600000</td>
+<td align="center">6</td>
+<td align="center">14</td>
+<td align="center">0</td>
+<td align="center">19741.845</td>
+<td align="center">6230.879</td>
+<td align="center">156005.0770</td>
+<td align="center">0.0006731</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td align="center">taurine</td>
+<td align="center">HMDB00251</td>
+<td align="center">124.0100</td>
+<td align="center">0.6800000</td>
+<td align="center">0</td>
+<td align="center">14</td>
+<td align="center">0</td>
+<td align="center">55897.293</td>
+<td align="center">40702.789</td>
+<td align="center">693164.0723</td>
+<td align="center">0.0001515</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td align="center">phenylpyruvic acid</td>
+<td align="center">HMDB00205</td>
+<td align="center">165.0545</td>
+<td align="center">3.5218833</td>
+<td align="center">13</td>
+<td align="center">14</td>
+<td align="center">0</td>
+<td align="center">19578.073</td>
+<td align="center">12113.349</td>
+<td align="center">217150.4032</td>
+<td align="center">0.0004835</td>
+</tr>
+<tr class="even">
+<td>NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="odd">
+<td>NA.1</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+<tr class="even">
+<td>NA.2</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+</tbody>
+</table>
+<p>The time-intensity curves for specified compounds are in the folder named “PKs” which is created automatically.</p>
+</div>
+<div id="corrplot" class="section level2">
+<h2><code>CorrPlot</code></h2>
+<p>A function to calculate the correlation coefficients and plot the correlation diagram (8 types) of two input datasets.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;B&quot;</span>)
+<span class="kw">data</span>(<span class="st">&quot;C&quot;</span>)
+<span class="kw">CorrPlot</span>(<span class="dt">dataset1=</span>B,<span class="dt">dataset2=</span>C,<span class="dt">cor.method=</span><span class="st">&quot;pearson&quot;</span>,<span class="dt">filepath=</span><span class="kw">getwd</span>(),<span class="dt">fig.form=</span><span class="st">&quot;heatmap&quot;</span>,<span class="dt">design =</span> design)</code></pre></div>
+</div>
+<div id="scatplot" class="section level2">
+<h2><code>ScatPlot</code></h2>
+<p>A function to plot the PCA or PLSDA score figures and trajectories on input data:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;A&quot;</span>)
+<span class="kw">ScatPlot</span>(<span class="dt">scat.data=</span>A,<span class="dt">scform=</span><span class="st">&quot;PCA&quot;</span>,<span class="dt">num.of.cp=</span><span class="dv">2</span>,<span class="dt">filepath=</span><span class="kw">getwd</span>(),design)</code></pre></div>
+</div>
+<div id="heatmap" class="section level2">
+<h2><code>HeatMap</code></h2>
+<p>A function to plot the heatmap and clusters of input data:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;A&quot;</span>)
+<span class="kw">HeatMap</span>(<span class="dt">data=</span>A,<span class="dt">cluster=</span><span class="st">&quot;both&quot;</span>,<span class="dt">scale=</span><span class="st">&quot;row&quot;</span>,<span class="dt">filepath=</span><span class="kw">getwd</span>(),design)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">help</span>(<span class="dt">package =</span> <span class="st">'polyPK'</span>, <span class="dt">help_type =</span> <span class="st">'html'</span>)
+<span class="co"># or see a standalone list of vignettes</span>
+<span class="kw">browseVignettes</span>(<span class="st">'polyPK'</span>)</code></pre></div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

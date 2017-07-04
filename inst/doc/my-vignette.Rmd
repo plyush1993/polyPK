@@ -1,0 +1,151 @@
+---
+title: "polyPK"
+author: "Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen, Wei Jia"
+date: "2017-5-25"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{polyPK vignette}
+  \VignetteEngine{knitr::knitr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The advent of mass spectrometry based analytical technologies coupled with multivariate statistical methods offers tremendous new opportunities for understanding the pharmacokinetics of multicomponent herbal medicines. In recent years, Jia’s group proposed a polyPK strategy, in a few review papers (Science 2015, Current Drug Metabolism 2010, Evidence-Based Complementary and Alternative Medicine 2013), to characterize the concentration-time profile and the metabolic response profile of multicomponent drugs, using an integrated phytochemical and metabolomics approach. The brand new strategy has been successfully applied in examining the complex pharmacokinetics and pharmacodynamics profiles of tea (Journal of Proteome Research 2012) and Huangqi decoction (Clinical Pharmacology & Therapeutics 2016). This package is the first implementation of the `polyPK` strategy with 10 easy-to-use functions. The absorbed drug constitutes, the downstream metabolites of the drug constituents and the endogenous metabolites impacted by them can be identified. The association of different types of compounds and their alterations along time can be illustrated by various figures and tables. The representative PK parameters of all compounds can be calculated.
+  
+ 10 functions of the package of polyPK:
+ `DataPre`,`GetDiffData`,`GetEndo`,`GetAbso`,`GetSecdAbso`,`PKs`,`Simi`,`ScatPlot`,`HeatMap`,`CorrPlot`
+
+## `DataPre`
+
+Preprocess the input data. Variables with a lot of zeros and outliers may be removed. Missing values may be imputed and filled by various methods. Data may be transformed by logarithm transformation.
+```{r,message = FALSE }
+library(polyPK)
+```
+
+```{r,results = "hide",warning = FALSE,message = FALSE}
+data("postData")
+pred_post<-polyPK::DataPre(tes=postData,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,filepath=getwd())
+```
+An example of preprocessed post-dose dataset:
+```{r}
+pred_post[c(1:10),c(1:10)]
+```
+
+## `Simi`
+
+A function which can get the similar metabolites of two datas.Especially the similar metabolites between drug and pre-dose metabolites.
+```{r,warning = FALSE,message = FALSE}
+data("preData")
+data("drugData")
+Simi(data1<-preData,data2<-drugData,filepath=getwd())
+
+```
+## `GetDiffData`
+
+A function to get all the differential compounds between the pre-dose and every post-dose datasets:
+```{r,warning = FALSE,message = FALSE}
+
+data("preData")
+data("postData")
+data("design")
+data("simidata")
+dif<-GetDiffData(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,t="Ttest",r.adj="fdr",filepath=getwd(),design=design)
+#'
+
+```
+An example of the differential compounds, with preprocessed data:
+```{r}
+prepoA<-dif$A[c(1:12),c(1:7)]
+as.data.frame(prepoA)
+```
+An example of the differential compounds, with original data:
+```{r}
+orgA<-dif$A_pre[c(1:12),c(1:7)]
+as.data.frame(orgA)
+```
+The p values:
+```{r}
+p<-dif$p
+p
+```
+The adjusted p values:
+```{r}
+padj<-dif$p_adj
+padj
+```
+
+## `GetEndo`
+
+A function to get the altered endogenous metabolites by similarity analysis on the list of differential compounds and the list of pre-dose compounds：
+
+```{r,warning = FALSE,message = FALSE}
+ data("preData")
+ data("A")
+ data("design")
+ data("simidata")
+GetEndo(preData,A,simidata,sim=80,filepath=getwd(),design=design)
+
+```
+## `GetAbso`
+
+A function to get the absorbed drug constitutes by similarity analysis on the list of differential compounds and the list of drug constitutes:
+
+```{r,warning = FALSE,message = FALSE}
+GetAbso(drugData, A, simidata,sim = 80, filepath=getwd(),design = design)
+
+```
+
+## `GetSecdAbso`
+
+A function to get secondary metabolites of the absorbed drug constitutes:
+
+```{r,warning = FALSE,message = FALSE}
+GetSecdAbso(A,B,C,simidata,sim=80,filepath=getwd(),design)
+
+```
+
+## `PKs`
+
+A function to calculate the 7 pharmacokinetics parameters (Tmax, Cmax, AUC, CL, Tlast, Tfirst, Cmin) and plot the time-intensity curves for specified compounds.
+
+A list of metabolites and 7 pharmacokinetics parameters (Tmax,Cmax,AUC,CL,Tlast,Tfirst,Cmin) of specified compound:
+```{r,warning = FALSE,message = FALSE}
+data("B")
+data("design")
+pks<-PKs(B,d.point="mean",d.ebar="SE",filepath=getwd(),design=design)
+knitr::kable(pks[c(1:10),],align = 'c')
+```
+
+The time-intensity curves for specified compounds are in the folder named “PKs” which is created automatically. 
+
+
+## `CorrPlot`
+
+A function to calculate the correlation coefficients and plot the correlation diagram (8 types) of two input datasets.
+```{r,warning = FALSE,message = FALSE,results = "hide"}
+data("B")
+data("C")
+CorrPlot(dataset1=B,dataset2=C,cor.method="pearson",filepath=getwd(),fig.form="heatmap",design = design)
+```
+
+## `ScatPlot`
+
+A function to plot the PCA or PLSDA score figures and trajectories on input data:
+```{r,warning = FALSE,message = FALSE,results = "hide"}
+data("A")
+ScatPlot(scat.data=A,scform="PCA",num.of.cp=2,filepath=getwd(),design)
+```
+
+## `HeatMap`
+
+A function to plot the heatmap and clusters of input data:
+```{r,warning = FALSE,message = FALSE,results = "hide"}
+data("A")
+HeatMap(data=A,cluster="both",scale="row",filepath=getwd(),design)
+```
+
+```{r eval=FALSE}
+help(package = 'polyPK', help_type = 'html')
+# or see a standalone list of vignettes
+browseVignettes('polyPK')
+```
