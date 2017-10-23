@@ -13,11 +13,10 @@ PKs(d.pk,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{d.pk}{
-The data under analysis (data frame with required format)
-The first row should be column names. The first and the second column of the first row should be "Name" and "ID", and you can set 2 more tags at the third and the fourth column of the first row, such as "m.z" and "RT.min." or anything you like. From the fifth column till the end, sample indexes or names are expected.  The first row of the data frame should be the gender information."1"means male,and "2" means female.The second row of the data frame should be the group information.The first column of the second row should be "group", and you can add group indexes of the data from the fifth column at the second row. The format of group number should be "0"(pre-dose). "1","2","3","4"...(post-dose). The third row of the data frame should be the information of timepoints.Please see the demo data for detailed format.
+The data under analysis (data frame with required format) The first row should be column names. The first and the second column of the first row should be "Name" and "ID", and you can set 2 more tags at the third and the fourth column of the first row, such as "m.z" and "RT.min." or anything you like. From the fifth column till the end, sample indexes or names are expected. The first row of the data frame should be the gender information."1"means male, and "2" means female. The second row of the data frame should be the group information. The first column of the second row should be "group", and you can add group indexes of the data from the fifth column at the second row. The format of group number should be "0"(pre-dose). "1","2","3","4"...(post-dose). The third row of the data frame should be the information of timepoints. Please see the demo data for detailed format.
 }
   \item{d.point}{
-The value to calculate the pharmacokinetics parameters,and the value of points in the time-intensity curve. d.point=c ("mean","median"). Default:"mean".
+The value to calculate the pharmacokinetics parameters, and the value of points in the time-intensity curve. d.point=c ("mean","median"). Default:"mean".
 }
   \item{d.ebar}{
 The value of error bars. d.ebar=c ("SE","SD"). Defalut:"SE".
@@ -26,7 +25,7 @@ The value of error bars. d.ebar=c ("SE","SD"). Defalut:"SE".
  A character string indicating the path where the results may be saved in.
 }
   \item{design}{
-(optional) a study design dataset(data frame with required format).Use data(design) to see the detailed format.Default:"FALSE"
+(optional) a study design dataset(data frame with required format). Use data(design) to see the detailed format. Default:"FALSE"
 }
 }
 \details{
@@ -51,17 +50,17 @@ Tfirst: The first time.
 Cmin: The least plasma concentration of a drug after administration.
 %%  \item{comp2 }{Description of 'comp2'}
 
-A folder named "PKresluts"will also be created automatically which contains three folders:"PKresluts(all)","PKresluts(male)","PKresluts(female)".Each folder has two kinds of files (.xlsx and .PDF).
+A folder named "PKresluts" will also be created automatically which contains three folders:"PKresluts(all)","PKresluts(male)","PKresluts(female)". Each folder has two kinds of files (.xlsx and .PDF).
 
-The file named “PK-parameters.xlsx” contains the pharmacokinetics parameters and the one or more *.PDF files show the time-intensity curves of specified metabolites. Each metabolite has one PDF file named "Time-Intensity-Curve of (its own name).pdf".If the study design is given by right fromat, the time points of meals and sleeps will be described at the bottom of the picture.
+The file named “PK-parameters.xlsx” contains the pharmacokinetics parameters and the one or more *.PDF files show the time-intensity curves of specified metabolites. Each metabolite has one PDF file named "Time-Intensity-Curve of (its own name).pdf".If the study design is given by right format, the time points of meals and sleeps will be described at the bottom of the picture.
 }
 \references{
-1.  Veng Pedersen P. Mean time parameters in pharmacokinetics. Definition, computation and clinical implications.(1898)Clin Pharmacokinet.
+1.  Veng Pedersen P. Mean time parameters in pharmacokinetics. Definition, computation and clinical implications. (1898) Clin Pharmacokinet.
 
-2.  Krishnaswami S, Wang T, et al. Single- and multiple-dose pharmacokinetics of tofacitinib in healthy Chinese volunteers.(2015)Clin Pharmacol Drug Dev.
+2.  Krishnaswami S, Wang T, et al. Single- and multiple-dose pharmacokinetics of tofacitinib in healthy Chinese volunteers. (2015) Clin Pharmacol Drug Dev.
 }
 \author{
-Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen, Wei Jia
+Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen and Wei Jia
 }
 \note{
 %%  ~~further notes~~

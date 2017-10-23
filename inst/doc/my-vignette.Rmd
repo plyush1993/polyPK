@@ -1,7 +1,7 @@
 ---
 title: "polyPK"
 author: "Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen, Wei Jia"
-date: "2017-5-25"
+date: "2017-10-21"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{polyPK vignette}
@@ -24,7 +24,7 @@ library(polyPK)
 
 ```{r,results = "hide",warning = FALSE,message = FALSE}
 data("postData")
-pred_post<-polyPK::DataPre(tes=postData,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,filepath=getwd())
+pred_post<-polyPK::DataPre(tes=postData,mv="mean",rz=80,sv=TRUE,log=FALSE,filepath=getwd())
 ```
 An example of preprocessed post-dose dataset:
 ```{r}
@@ -49,18 +49,18 @@ data("preData")
 data("postData")
 data("design")
 data("simidata")
-dif<-GetDiffData(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,t="Ttest",r.adj="fdr",filepath=getwd(),design=design)
+dif<-GetDiffData(preData,postData,simidata,mv="mean",rz=80,sv=TRUE,log=FALSE,t="Ttest",r.adj="fdr",filepath=getwd(),design=design)
 #'
 
 ```
 An example of the differential compounds, with preprocessed data:
 ```{r}
-prepoA<-dif$A[c(1:12),c(1:7)]
+prepoA<-dif$A
 as.data.frame(prepoA)
 ```
 An example of the differential compounds, with original data:
 ```{r}
-orgA<-dif$A_pre[c(1:12),c(1:7)]
+orgA<-dif$A_pre
 as.data.frame(orgA)
 ```
 The p values:

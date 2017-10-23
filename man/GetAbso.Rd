@@ -19,7 +19,7 @@ The drug constitutes dataset (data frame)
 The differential compounds which is derived from the GetDiffData function.
 }
   \item{simidata}{
-The same compounds of drug and pre-dose metabolome data,which is derived from \link{Simi}.
+The same compounds of drug and pre-dose metabolome data, which is derived from \link{Simi}.
 }
   \item{sim}{
 The parameter (percentage) for similarity analysis. Default: 80.
@@ -28,7 +28,7 @@ The parameter (percentage) for similarity analysis. Default: 80.
 A character string indicating the path where the results may be saved in.
 }
   \item{design}{
-(optional) a study design dataset(data frame with required format).Use data(design) to see the detailed format.Default:"FALSE"
+(optional) a study design dataset(data frame with required format).Use data(design) to see the detailed format. Default:"FALSE".
 }
 
 }
@@ -39,22 +39,22 @@ nothing
 \value{
 A data frame of the list and data of absorbed drug constitutes.
 
-A folder named "AbsorbedDrugMetabolites" containing a file named "AbsorbedDrugMetabolites.xlsx" will be created automatically which is the list and data of absorbed drug constitutes.And the foreground color of the same compounds produced by \link{Simi} will be marked with light blue.If the study design is given by right fromat, the meal times and sleep times will be marked as yellow and grey.
+A folder named "AbsorbedDrugMetabolites" containing a file named "AbsorbedDrugMetabolites.xlsx" will be created automatically which is the list and data of absorbed drug constitutes. And the foreground color of the same compounds produced by \link{Simi} will be marked with light blue. If the study design is given by right fromat, the meal times and sleep times will be marked as yellow and grey.
 }
 \references{
-1.	Ke Lan,Wei Jia,et al.An Integrated Metabolomics and Pharmacokinetics Strategy for Multi-Component Drug Evaluation.(2010)Current Drug Metabolism.
+1.	Ke Lan, Wei Jia, et al. An Integrated Metabolomics and Pharmacokinetics Strategy for Multi-Component Drug Evaluation. (2010) Current Drug Metabolism.
 
-2.  Guoxiang Xie,Wei Jia,et al.Metabolic Fate of Tea Polyphenols in Humans.(2012)Journal of Proteome Research.
+2.  Guoxiang Xie, Wei Jia, et al. Metabolic Fate of Tea Polyphenols in Humans. (2012) Journal of Proteome Research.
 
-3.	Ke Lan,Wei Jia,et al.Towards Polypharmacokinetics:Pharmacokinetics of Multicomponent Drug and Herbal Medicines Using a Metabolomics Approach.(2013)Evidence-Based Complementary and Alternative Medicine.
+3.	Ke Lan, Wei Jia, et al. Towards Polypharmacokinetics: Pharmacokinetics of Multicomponent Drug and Herbal Medicines Using a Metabolomics Approach. (2013) Evidence-Based Complementary and Alternative Medicine.
 
-4.	Wei Jia,Tai-ping Fan,et al.The polypharmacokinetics of herbal medicines.(2015) Science.
+4.	Wei Jia, Tai-ping Fan, et al. The polypharmacokinetics of herbal medicines. (2015) Science.
 
-5.	Guoxiang Xie,Wei Jia,et al.Poly-pharmacokinetic study of a multicomponent herbal medicine in healthy Chinese volunteers.(2017)Clinical Pharmacology&Therapeutics.
+5.	Guoxiang Xie, Wei Jia, et al. Poly-pharmacokinetic study of a multicomponent herbal medicine in healthy Chinese volunteers. (2017) Clinical Pharmacology&Therapeutics.
 %% ~put references to the literature/web site here ~
 }
 \author{
-Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen, Wei Jia
+Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen and Wei Jia
 }
 \note{
 nothing

@@ -4,17 +4,17 @@
 #'
 #' @param dataset1 The first dataset (data frame with required format). The first row should be column names. The first and the second column of the first row should be "Name" and "ID", and you can set 2 more tags at the third and the fourth column of the first row, such as "m.z" and "RT.min." or anything you like. From the fifth column till the end, sample indexes or names are expected. The second row of the data frame should be the group information. The first column of the second row should be "group", and you can add group indexes of the data from the fifth column at the second row. The format of group number should be "0"(pre-dose). "1","2","3","4"...(post-dose). Please see the demo data for detailed format.This variable maybe the results of GetAbso/GetEndo/GetSecdAbso.
 #' @param dataset2 The second dataset (data frame with required format). The form of dataset2 is the same as the form of dataset1.This variable maybe the results of GetAbso/GetEndo/GetSecdAbso
-#' @param cor.method A character string indicating which correlation analysis ("pearson", "kendall", or "spearman") is to be used. Default: "pearson".
+#' @param cor.method A character string indicating which correlation analysis ("pearson", "kendall", or "spearman") is to be used. Default: "spearman".
 #' @param filepath A character string indicating the path where the results may be saved in.
 #' @param fig.form The form of the correlation diagram.  figure.fig.form=c("heatmap","bubble","ordered.bubble","chord","square","ord.square","pie","ord.pie"). Default: "heatmap".
 #' @param design A study design dataset(data frame with required format).Use data(StudyDesign) to see the detailed form.
 #'
 #' @return NULL
 #'
-#' @examples CorrPlot(B,C,"pearson",filepath=getwd(),fig.form="heatmap",design)
+#' @examples CorrPlot(B,C,"spearman",filepath=getwd(),fig.form="heatmap",design)
 #'
 #' @export
-CorrPlot<-function(dataset1,dataset2,cor.method="pearson",filepath,fig.form="heatmap",design=FALSE){
+CorrPlot<-function(dataset1,dataset2,cor.method="spearman",filepath,fig.form="heatmap",design=FALSE){
   #library(corrplot)
   #library(circlize)
   # library(lattice)

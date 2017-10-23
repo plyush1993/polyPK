@@ -1,0 +1,10 @@
+polyPK v2.0.0 (2017-10-23)
+==============
+
+Changes:
+
+* The default correlation analysis method in CorrPlot() was changed. The argument of "cor.method" was changed from "pearson" to "spearman".
+* The order of results (differential compounds) in GetDiffData() was changed. The compounds were listed in weight rank order which was calculated by the SAM (Significance analysis of microarrays) method (see reference 6 in GetDiffData()).
+* The optional methods of missing values imputation in DataPre() and GetDiffData() were simplified.
+* The R2Ys, Q2Ys and error rate of PLS-DA were displayed in the figure or added in corresponding result file. The R2, Q2 of every PC from PCA were displayed in the scatter plot.
+* The R2-Q2 scatter plot of permutation (n=100) on PLS-DA was added in the corresponding result file.

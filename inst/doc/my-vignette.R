@@ -3,7 +3,7 @@ library(polyPK)
 
 ## ----results = "hide",warning = FALSE,message = FALSE--------------------
 data("postData")
-pred_post<-polyPK::DataPre(tes=postData,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,filepath=getwd())
+pred_post<-polyPK::DataPre(tes=postData,mv="mean",rz=80,sv=TRUE,log=FALSE,filepath=getwd())
 
 ## ------------------------------------------------------------------------
 pred_post[c(1:10),c(1:10)]
@@ -20,16 +20,16 @@ data("preData")
 data("postData")
 data("design")
 data("simidata")
-dif<-GetDiffData(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,t="Ttest",r.adj="fdr",filepath=getwd(),design=design)
+dif<-GetDiffData(preData,postData,simidata,mv="mean",rz=80,sv=TRUE,log=FALSE,t="Ttest",r.adj="fdr",filepath=getwd(),design=design)
 #'
 
 
 ## ------------------------------------------------------------------------
-prepoA<-dif$A[c(1:12),c(1:7)]
+prepoA<-dif$A
 as.data.frame(prepoA)
 
 ## ------------------------------------------------------------------------
-orgA<-dif$A_pre[c(1:12),c(1:7)]
+orgA<-dif$A_pre
 as.data.frame(orgA)
 
 ## ------------------------------------------------------------------------

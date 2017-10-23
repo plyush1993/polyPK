@@ -4,18 +4,17 @@
 #'
 #' @param tes The data under pretreatment (data frame with required format). The first row should be column names. The first and the second column of the first row should be "Name" and "ID", and you can set 2 more tags at the third and the fourth column of the first row, such as "m.z" and "RT.min." or anything you like. From the fifth column till the end, sample indexes or names are expected. The second row of the data frame should be the group information. The first column of the second row should be "group", and you can add group indexes of the data from the fifth column at the second row. The format of group number should be "0"(pre-dose). "1","2","3","4"...(post-dose). Please see the demo data for detailed format.
 #' @param rz  The percentage of zeros for variable elimination (Default:80). Variables with zero numbers higher than rz% will be removed.
-#' @param mv The method of missing values imputation (Default:"mean"). mv=c ("mean", "groupmean", "median", "groupmedian", "groupmin", "min", "knn", "svd", "rf", "qrilc").
-#' @param multiple The parameter for missing values imputation. Missing values will be replaced by multiple*mean/median/min (Default:0.1)
+#' @param mv The method of missing values imputation (Default:"min"). mv=c ("min", "knn","qrilc").
 #' @param sv A logical value indicating whether to remove the outliers (Default:TRUE). The data which distance to the mean is bigger than 1.5 times of the difference value between lower quartile and upper quartile, should be identified as an outlier. And it will be replaced by the mean value of corresponding row.
 #' @param log A logical value indicating whether to take the logarithm on the data (Default:FALSE)
 #' @param filepath A character string indicating the path where the results may be saved in
 #'
 #' @return data.frame
 #'
-#' @examples DataPre(tes=postData,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,filepath=getwd())
+#' @examples DataPre(tes=postData,mv="min",rz=80,sv=TRUE,log=FALSE,filepath=getwd())
 #'
 #' @export
-DataPre <- function(tes,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,filepath=getwd()) {
+DataPre <- function(tes,mv="min",rz=80,sv=TRUE,log=FALSE,filepath=getwd()) {
 
   gend_g<-tes[1,]
   row_g<-tes[2,]#group information
@@ -43,133 +42,15 @@ DataPre <- function(tes,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,filepath=
 
   #------------------function of replace the zeros or NA--------------------------------
 
-  ###  method1:replace the zeros or NAs with the mean value of the group
-
-  if(mv=="groupmean"){
-
-    t_g<-rbind(groupnumber,t1)
-    mean_gg<-data.frame()
-    y<-as.numeric(groupnumber)
-    for(i in 1:dim(t1)[1]){
-      x<-as.numeric(t1[i,])
-      mean_g<-t(tapply(x,y,mean,na.rm = TRUE))
-      mean_g<-as.data.frame(mean_g)
-      mean_gg<-rbind(mean_gg,mean_g)
-    }
-    mean_gg<-mean_gg*multiple
-
-
-
-    if(y[1]!=0)
-    {
-      for(i in 1:dim(t1)[1]){
-        for(j in 1:dim(t1)[2]){
-          t1[i,j][is.na(t1[i,j])]<-mean_gg[i,y[j]]
-        }
-      }
-    }
-    if(y[1]==0)
-    {
-      for(i in 1:dim(t1)[1]){
-        for(j in 1:dim(t1)[2]){
-          t1[i,j][is.na(t1[i,j])]<-mean_gg[i,1]
-        }
-      }
-    }
-
-    t1[is.na(t1)]<-0
-    tesmv<-t1
-  }
-
-  ###  method2:replace the zeros or NAs with the median value of the group
-
-  if(mv=="groupmedian"){
-    t_g<-rbind(groupnumber,t1)
-    mean_gg<-data.frame()
-    y<-as.numeric(groupnumber)
-    for(i in 1:dim(t1)[1]){
-      x<-as.numeric(t1[i,])
-      mean_g<-t(tapply(x,y,median,na.rm = TRUE))
-      mean_g<-as.data.frame(mean_g)
-      mean_gg<-rbind(mean_gg,mean_g)
-    }
-    mean_gg<-mean_gg*multiple
-
-    if(y[1]!=0)
-    {
-      for(i in 1:dim(t1)[1]){
-        for(j in 1:dim(t1)[2]){
-          t1[i,j][is.na(t1[i,j])]<-mean_gg[i,y[j]]
-        }
-      }
-    }
-    if(y[1]==0)
-    {
-      for(i in 1:dim(t1)[1]){
-        for(j in 1:dim(t1)[2]){
-          t1[i,j][is.na(t1[i,j])]<-mean_gg[i,1]
-        }
-      }
-    }
-    t1[is.na(t1)]<-0
-    tesmv<-t1
-  }
-  ###  method3:replace the zeros or NAs with the minimum value of the group
-
-  if(mv=="groupmin"){
-    t_g<-rbind(groupnumber,t1)
-    mean_gg<-data.frame()
-    y<-as.numeric(groupnumber)
-    for(i in 1:dim(t1)[1]){
-      x<-as.numeric(t1[i,])
-      mean_g<-t(tapply(x,y,min,na.rm = TRUE))
-      mean_g<-as.data.frame(mean_g)
-      mean_gg<-rbind(mean_gg,mean_g)
-    }
-    mean_gg<-mean_gg*multiple
-
-    if(y[1]!=0)
-    {
-      for(i in 1:dim(t1)[1]){
-        for(j in 1:dim(t1)[2]){
-          t1[i,j][is.na(t1[i,j])]<-mean_gg[i,y[j]]
-        }
-      }
-    }
-    if(y[1]==0)
-    {
-      for(i in 1:dim(t1)[1]){
-        for(j in 1:dim(t1)[2]){
-          t1[i,j][is.na(t1[i,j])]<-mean_gg[i,1]
-        }
-      }
-    }
-    t1[is.na(t1)]<-0
-    tesmv<-t1
-  }
-  ###  method4:replace the zeros or NAs with the mean value of the metabolite
-  if(mv=="mean"){
-    r<-apply(t1, 1, mean,na.rm = TRUE)
-    r<-r*multiple
-    for(i in 1:length(tes[,1])) tes[i,][is.na(tes[i,])]<-r[i]
-    tesmv<-tes[,-c(1:4)]
-  }
-  ###  method5:replace the zeros or NAs with the median value of the metabolite
-  if(mv=="median"){
-    r<-apply(t1, 1, median,na.rm = TRUE)
-    r<-r*multiple
-    for(i in 1:length(tes[,1])) tes[i,][is.na(tes[i,])]<-r[i]
-    tesmv<-tes[,-c(1:4)]
-  }
-  ###  method6:replace the zeros or NAs with the minimum value of the metabolite
+  ###  method1:replace the zeros or NAs with the minimum value of the metabolite
   if(mv=="min"){
     r<-apply(t1, 1, min,na.rm = TRUE)
-    r<-r*multiple
+    r<-r*1
     for(i in 1:length(tes[,1])) tes[i,][is.na(tes[i,])]<-r[i]
     tesmv<-tes[,-c(1:4)]
   }
   #output tesmv(changed)
-  ### method7: knn from tha package of "impute"
+  ### method2: knn from tha package of "impute"
   if(mv=="knn"){
    # library(impute)
     t1knn <- impute::impute.knn(as.matrix(t1)) #t1knn data numeric
@@ -177,27 +58,7 @@ DataPre <- function(tes,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,filepath=
     tes<-cbind(headname,tt)#combinate with headname-
     tesmv<-tes[,-c(1:4)]
   }
-  ###method 8:rf-from the package of "missForest"
-  if(mv=="rf"){
-   # library(missForest)
-    t1rf<-missForest::missForest(t(t1))#t-ed missforest
-    ttrf<-t(t1rf$ximp)#data
-    tr<-as.data.frame(ttrf)#dataframe
-    tes<-cbind(headname,tr)#combinate
-    tesmv<-tes[,-c(1:4)]
-  }
-  ####method 9:svd:from the package of "pcaMethods"
-  if(mv=="svd"){
-  #  library(pcaMethods)
-    t1<-log(t1)
-    ts <- pcaMethods::pca(t1, method="svdImpute", nPcs=5, center = TRUE)
-    ttsvd <- pcaMethods::completeObs(ts) #data
-    tsvd<-as.data.frame(ttsvd)
-    tes<-cbind(headname,tsvd)
-    tesmv<-tes[,-c(1:4)]
-    tesmv<-exp(tesmv)
-  }
-  ####method 10 :qrilc, from teh package of "imputeLCMD"
+  ####method 3:qrilc, from teh package of "imputeLCMD"
   if(mv=="qrilc"){
    # library(imputeLCMD)
     t1<-log(t1)
@@ -267,7 +128,7 @@ DataPre <- function(tes,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,filepath=
       mean_g<-as.data.frame(mean_g)
       mean_gg<-rbind(mean_gg,mean_g)
     }
-    mean_gg<-mean_gg*multiple
+    mean_gg<-mean_gg*1
 
     if(y[1]!=0)
     {

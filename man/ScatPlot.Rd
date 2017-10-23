@@ -8,13 +8,13 @@ Plot the PCA or PLSDA score figures and trajectories on input data
 A function to plot the PCA or PLSDA figures of input data.
 }
 \usage{
-ScatPlot(scat.data,scform="PCA",num.of.cp,filepath,design)
+ScatPlot(scat.data,scform="PCA",num.of.cp,fold,filepath,design)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{scat.data}{
 The data under analysis (data frame with required format).
-The first row should be column names. The first and the second column of the first row should be "Name" and "ID", and you can set 2 more tags at the third and the fourth column of the first row, such as "m.z" and "RT.min." or anything you like. From the fifth column till the end, sample indexes or names are expected.  The first row of the data frame should be the gender information."1"means male,and "2" means female.The second row of the data frame should be the group information.The first column of the second row should be "group", and you can add group indexes of the data from the fifth column at the second row. The format of group number should be "0"(pre-dose). "1","2","3","4"...(post-dose). The third row of the data frame should be the information of timepoints.Please see the demo data for detailed format.
+The first row should be column names. The first and the second column of the first row should be "Name" and "ID", and you can set 2 more tags at the third and the fourth column of the first row, such as "m.z" and "RT.min." or anything you like. From the fifth column till the end, sample indexes or names are expected.  The first row of the data frame should be the gender information. "1" means male, and "2" means female. The second row of the data frame should be the group information. The first column of the second row should be "group", and you can add group indexes of the data from the fifth column at the second row. The format of group number should be "0"(pre-dose). "1","2","3","4"...(post-dose). The third row of the data frame should be the information of timepoints. Please see the demo data for detailed format.
 }
   \item{scform}{
   The form of scat plot. scform=c ("PCA","PLSDA"). Default:"PCA".
@@ -22,11 +22,14 @@ The first row should be column names. The first and the second column of the fir
   \item{num.of.cp}{
 The number of components to decompose. Default:2.
   }
+    \item{fold}{
+Integer: number of random permutations [default is 100 for single response models (without train/test partition)].
+  }
     \item{filepath}{
 A character string indicating the path where the results may be saved in.
 }
   \item{design}{
-(optional) a study design dataset(data frame with required format).Use data(design) to see the detailed format.Default:"FALSE"
+(optional) a study design dataset(data frame with required format).Use data(design) to see the detailed format. Default:"FALSE".
 }
 
 
@@ -36,21 +39,25 @@ A character string indicating the path where the results may be saved in.
 nothing
 }
 \value{
-A folder named "PCAresults" or "PLSDAresluts" with three folders :"PCA/PLSDA(all)","PCA/PLSDA(male)",and "PCA/PLSDA(female)". At each folder 4 files will be created automatically.
+A folder named "PCAresults" or "PLSDAresluts" with three folders: "PCA/PLSDA(all)", "PCA/PLSDA(male)" and "PCA/PLSDA(female)". In each folder, 4 (for PCA) or 6 (for PLSDA) files will be created automatically.
 
 PCA(PLSDA)-loading.xlsx: The loading values of PCA (PLSDA) analysis.
 
 PCA(PLSDA)-score.xlsx: The score values of PCA (PLSDA) analysis.
 
-PCA(PLSDA)-scorePlot.pdf: A 2 dimensional scores plot of PCA (PLSDA) analysis.If the study design is given by right from, the time points of meals and sleeps will be described at the bottom of the picture.
+PCA(PLSDA)-scorePlot.pdf: A 2 dimensional scores plot of PCA (PLSDA) analysis. If the study design is given, the time points of meals and sleeps will be described at the bottom of the picture.
 
-PCA(PLSDA)-scorePlot(track).pdf: A trajectory plot derived from the PCA (PLSDA) scores plot in which samples of a group will be represented by one point (the center of the group) and will be connected by lines in time ascending order.If the study design is given by right fromat, the time points of meals and sleeps will be described at the bottom of the picture.
+PCA(PLSDA)-scorePlot(track).pdf: A trajectory plot derived from the PCA (PLSDA) scores plot in which samples of a group will be represented by one point (the center of the group) and will be connected by lines in time ascending order. If the study design is given, the time points of meals and sleeps will be described at the bottom of the picture.
+
+ErrorRate.xlsx (only in "PLSDAresluts"): For PLS-DA models, "ScatPlot" produces a matrix of overall error rate estimation. The dimensions of the matrix correspond to the components in the model and to the prediction method used, respectively.
+
+PermutationPlot.pdf (only in "PLSDAresluts"): Scatter plot of true and permutated R2Ys and Q2Ys.
 }
 \references{
 nothing
 }
 \author{
-Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen, Wei Jia
+Mengci Li, Shouli Wang, Guoxiang Xie, Tianlu Chen and Wei Jia
 }
 \note{
 nothing

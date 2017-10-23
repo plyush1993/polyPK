@@ -4,13 +4,12 @@
 #'
 #' @param pre_p  the datasets of pre-dose (data frame) with an indicator of time points (grouping variable) at the second row.
 #' @param pos_p The post-dose dataset (data frame) with an indicator of time points (grouping variable) at the second row.
-#' @param mv The method of missing values imputation (Default:"mean"). mv=c ("mean", "groupmean", "median", "groupmedian", "groupmin", "min", "knn", "svd", "rf", "qrilc")
+#' @param mv The method of missing values imputation (Default:"min"). mv=c ("min", "knn","qrilc")
 #' @param rz  The percentage of zeros for variable elimination (Default: 80).
-#' @param multiple The parameter for missing values imputation. Missing values will be replaced by multiple*mean/median/min (Default: 0.1).
 #' @param sv A logical value indicating whether to remove the outliers (Default:TRUE). The data which distance to the mean is bigger than 1.5 times of the difference value between lower quartile and upper quartile, should be identified as an outlier. And it will be replaced by the mean value of corresponding row.
 #' @param log A logical value indicating whether to take the logarithm on the datasets (Default:TRUE)
 #' @param t The method for differential compounds identification. C ("Ttest", "MWtest"). Default: "Ttest". Compounds with p values less than 0.05 were taken as differential ones.
-#' @param r.adj The methods for p values adjustment. r.adj=c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"). Default: "fdr".
+#' @param r.adj The methods for p values adjustment. r.adj=c("holm","fdr"). Default: "fdr".
 #' @param filepath A character string indicating the path where the results may be saved in.
 #' @param simidata The similar compounds of drug and pre-dose metabolites,which is derived froem the Simi function.
 #' @param design A study design dataset(data frame with required format).Use data(StudyDesign) to see the detailed form.
@@ -20,13 +19,14 @@
 #' @examples GetDiffData(preData,postData,simidata)
 #'
 #' @export
-GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE,t="Ttest",r.adj="fdr",filepath=getwd(),design=F){
+GetDiffData<-function(preData,postData,simidata,mv="min",rz=80,sv=TRUE,log=FALSE,t="Ttest",r.adj="fdr",filepath=getwd(),design=F){
   #library(plyr)
   #library(sqldf)
+  multiple<-1
   pre_p<-as.data.frame(preData)
   pos_p<-as.data.frame(postData)
   ####--------------the function of prepocssing the input data-----------------####
-  DataPre_gdd <- function(tes,mv="mean",rz=80,multiple=0.1,sv=TRUE,log=FALSE) {
+  DataPre_gdd <- function(tes,mv="min",rz=80,sv=TRUE,log=FALSE) {
 
     gend_g<-tes[1,]
     row_g<-tes[2,]#group information
@@ -50,137 +50,22 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
     #add row num of zero(95)
     tes[tes==0]<-NA;
     headname<-tes[,c(1:4)]
-    tntoz<-t3<-t1<-tes[,-c(1:4)];
-
+    tntoz<-t3<-t1<-as.numeric(as.matrix(tes[,-c(1:4)]));
+    dim(t1)<-dim(tes[,-c(1:4)])
+    dim(t3)<-dim(tes[,-c(1:4)])
+    dim(tntoz)<-dim(tes[,-c(1:4)])
     #------------------function of replace the zeros or NA--------------------------------
 
-    ###  method1:replace the zeros or NAs with the mean value of the group
 
-    if(mv=="groupmean"){
-
-      t_g<-rbind(groupnumber,t1)
-      mean_gg<-data.frame()
-      y<-as.numeric(groupnumber)
-      for(i in 1:dim(t1)[1]){
-        x<-as.numeric(t1[i,])
-        mean_g<-t(tapply(x,y,mean,na.rm = TRUE))
-        mean_g<-as.data.frame(mean_g)
-        mean_gg<-rbind(mean_gg,mean_g)
-      }
-      mean_gg<-mean_gg*multiple
-
-
-
-      if(y[1]!=0)
-      {
-        for(i in 1:dim(t1)[1]){
-          for(j in 1:dim(t1)[2]){
-            t1[i,j][is.na(t1[i,j])]<-mean_gg[i,y[j]]
-          }
-        }
-      }
-      if(y[1]==0)
-      {
-        for(i in 1:dim(t1)[1]){
-          for(j in 1:dim(t1)[2]){
-            t1[i,j][is.na(t1[i,j])]<-mean_gg[i,1]
-          }
-        }
-      }
-
-      t1[is.na(t1)]<-0
-      tesmv<-t1
-    }
-
-    ###  method2:replace the zeros or NAs with the median value of the group
-
-    if(mv=="groupmedian"){
-      t_g<-rbind(groupnumber,t1)
-      mean_gg<-data.frame()
-      y<-as.numeric(groupnumber)
-      for(i in 1:dim(t1)[1]){
-        x<-as.numeric(t1[i,])
-        mean_g<-t(tapply(x,y,median,na.rm = TRUE))
-        mean_g<-as.data.frame(mean_g)
-        mean_gg<-rbind(mean_gg,mean_g)
-      }
-      mean_gg<-mean_gg*multiple
-
-      if(y[1]!=0)
-      {
-        for(i in 1:dim(t1)[1]){
-          for(j in 1:dim(t1)[2]){
-            t1[i,j][is.na(t1[i,j])]<-mean_gg[i,y[j]]
-          }
-        }
-      }
-      if(y[1]==0)
-      {
-        for(i in 1:dim(t1)[1]){
-          for(j in 1:dim(t1)[2]){
-            t1[i,j][is.na(t1[i,j])]<-mean_gg[i,1]
-          }
-        }
-      }
-      t1[is.na(t1)]<-0
-      tesmv<-t1
-    }
-    ###  method3:replace the zeros or NAs with the minimum value of the group
-
-    if(mv=="groupmin"){
-      t_g<-rbind(groupnumber,t1)
-      mean_gg<-data.frame()
-      y<-as.numeric(groupnumber)
-      for(i in 1:dim(t1)[1]){
-        x<-as.numeric(t1[i,])
-        mean_g<-t(tapply(x,y,min,na.rm = TRUE))
-        mean_g<-as.data.frame(mean_g)
-        mean_gg<-rbind(mean_gg,mean_g)
-      }
-      mean_gg<-mean_gg*multiple
-
-      if(y[1]!=0)
-      {
-        for(i in 1:dim(t1)[1]){
-          for(j in 1:dim(t1)[2]){
-            t1[i,j][is.na(t1[i,j])]<-mean_gg[i,y[j]]
-          }
-        }
-      }
-      if(y[1]==0)
-      {
-        for(i in 1:dim(t1)[1]){
-          for(j in 1:dim(t1)[2]){
-            t1[i,j][is.na(t1[i,j])]<-mean_gg[i,1]
-          }
-        }
-      }
-      t1[is.na(t1)]<-0
-      tesmv<-t1
-    }
-    ###  method4:replace the zeros or NAs with the mean value of the metabolite
-    if(mv=="mean"){
-      r<-apply(t1, 1, mean,na.rm = TRUE)
-      r<-r*multiple
-      for(i in 1:length(tes[,1])) tes[i,][is.na(tes[i,])]<-r[i]
-      tesmv<-tes[,-c(1:4)]
-    }
-    ###  method5:replace the zeros or NAs with the median value of the metabolite
-    if(mv=="median"){
-      r<-apply(t1, 1, median,na.rm = TRUE)
-      r<-r*multiple
-      for(i in 1:length(tes[,1])) tes[i,][is.na(tes[i,])]<-r[i]
-      tesmv<-tes[,-c(1:4)]
-    }
-    ###  method6:replace the zeros or NAs with the minimum value of the metabolite
+    ###  method1:replace the zeros or NAs with the minimum value of the metabolite
     if(mv=="min"){
       r<-apply(t1, 1, min,na.rm = TRUE)
-      r<-r*multiple
+
       for(i in 1:length(tes[,1])) tes[i,][is.na(tes[i,])]<-r[i]
       tesmv<-tes[,-c(1:4)]
     }
     #output tesmv(changed)
-    ### method7: knn from tha package of "impute"
+    ### method2: knn from tha package of "impute"
     if(mv=="knn"){
       # library(impute)
       t1knn <- impute::impute.knn(as.matrix(t1)) #t1knn data numeric
@@ -188,27 +73,7 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
       tes<-cbind(headname,tt)#combinate with headname-
       tesmv<-tes[,-c(1:4)]
     }
-    ###method 8:rf-from the package of "missForest"
-    if(mv=="rf"){
-      # library(missForest)
-      t1rf<-missForest::missForest(t(t1))#t-ed missforest
-      ttrf<-t(t1rf$ximp)#data
-      tr<-as.data.frame(ttrf)#dataframe
-      tes<-cbind(headname,tr)#combinate
-      tesmv<-tes[,-c(1:4)]
-    }
-    ####method 9:svd:from the package of "pcaMethods"
-    if(mv=="svd"){
-      #  library(pcaMethods)
-      t1<-log(t1)
-      ts <- pcaMethods::pca(t1, method="svdImpute", nPcs=5, center = TRUE)
-      ttsvd <- pcaMethods::completeObs(ts) #data
-      tsvd<-as.data.frame(ttsvd)
-      tes<-cbind(headname,tsvd)
-      tesmv<-tes[,-c(1:4)]
-      tesmv<-exp(tesmv)
-    }
-    ####method 10 :qrilc, from teh package of "imputeLCMD"
+    ####method 3 :qrilc, from teh package of "imputeLCMD"
     if(mv=="qrilc"){
       # library(imputeLCMD)
       t1<-log(t1)
@@ -278,7 +143,7 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
         mean_g<-as.data.frame(mean_g)
         mean_gg<-rbind(mean_gg,mean_g)
       }
-      mean_gg<-mean_gg*multiple
+      mean_gg<-mean_gg*1
 
       if(y[1]!=0)
       {
@@ -316,12 +181,13 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
   }
 
   ####------------------get two prepocessed datasets---------------------------####
-  pre<-DataPre_gdd(pre_p,mv,rz,multiple,sv,log)
-  pos<-DataPre_gdd(pos_p,mv,rz,multiple,sv,log)
+  pre<-DataPre_gdd(pre_p,mv,rz,sv,log)
+  pos<-DataPre_gdd(pos_p,mv,rz,sv,log)
   pre.gender<-pre[1,]
   pos.gender<-pos[1,-c(1:4)]
   row.gender<-cbind(pre.gender,pos.gender)
   pre.group<-pre[2,]
+  people_num<-length(pre.group)-4#the number of samples
   pos.group<-pos[2,-c(1:4)]
   row.group<-cbind(pre.group,pos.group)
   pre.tp<-pre[3,]
@@ -402,7 +268,8 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
   group<-row.group
   testallgroup<-rbind(row.group,drboth)
   #testallgroup (both)
-  groupnum<-as.numeric (apply(group[5:length(group)],1,max))# number of group(9)
+  group_new<-as.numeric(group)
+  groupnum<-as.numeric (max(group_new[-c(1:4)],na.rm = TRUE))# number of group(5)
   lg<-0:groupnum
   tg<-matrix(0,nrow=1,ncol=groupnum+1)
   for(g in 0:groupnum){
@@ -421,6 +288,11 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
   lipre<-as.vector(li[[1]])
 
   p_group_2<-p_group<-matrix(0,nrow = dim(lipre)[1],ncol=length(tg)-1)
+
+
+  dirout = paste(filepath, "/DifferentialMetabolites", "/", sep = "")
+  dir.create(dirout)
+
   ####---------------------------two method of test(t-test /Wilcox)---------------------------####
   if(t=="Ttest"){
     orglipre<-lipre
@@ -439,6 +311,13 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
         p_group_2[i,g-1]<-t_prepos$p.value
       }
     }
+    p_group<-p_group_2
+    dim(p_group_2)<-dim(p_group)[1]*dim(p_group)[2]
+    p_group_adj<-p.adjust(p_group_2,method =r.adj)
+    dim(p_group_adj)<-c(dim(lipre)[1],length(tg)-1)
+    ff<-function(x){sum(x<0.05) }
+    pp_group_adj<-as.data.frame(p_group_adj)
+    p_g_a_s<-apply(pp_group_adj,1,ff)# each row number of <0.05
   }
   if(t=="MWtest"){
     for(g in 2:length(tg)) {
@@ -448,23 +327,96 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
         p_group_2[i,g-1]<-t_prepos$p.value
       }
     }
+
+    p_group<-p_group_2
+    dim(p_group_2)<-dim(p_group)[1]*dim(p_group)[2]
+    p_group_adj<-p.adjust(p_group_2,method =r.adj)
+    dim(p_group_adj)<-c(dim(lipre)[1],length(tg)-1)
+    ff<-function(x){sum(x<0.05) }
+    pp_group_adj<-as.data.frame(p_group_adj)
+    p_g_a_s<-apply(pp_group_adj,1,ff)# each row number of <0.05
+
+
   }
-  p_group<-p_group_2
-  dim(p_group_2)<-dim(p_group)[1]*dim(p_group)[2]
-  p_group_adj<-p.adjust(p_group_2,method =r.adj)
-  dim(p_group_adj)<-c(dim(lipre)[1],length(tg)-1)
+ ######### if(t=="SAM"){
+
+    rank_num<-rep(c(0:people_num),groupnum)
+    rank_data_post<-rbind(rank_num,drboth[,-c(1:4)])
+    t_rankpost_old<-t(rank_data_post)
+    t_rankpost<-as.data.frame(t_rankpost_old)
+    t_rankpost<-as.matrix(t_rankpost)
+    t_rankpost<-as.numeric(t_rankpost)
+    dim(t_rankpost)<-dim(t_rankpost_old)
+    t_ranked_post<-t_rankpost[order(t_rankpost[,1],decreasing=F),]
+    ranked_post<-t(t_ranked_post)
+    ranked_data<-ranked_post[-1,]
+    all_post<-dim(ranked_data)[2]
+
+    y_rank=paste(c(rep(1,length(rank_num)-5)),"Time",
+                 rep(0:(length(rank_num)/people_num),people_num),sep="")
+    start=seq(1,all_post,by=groupnum+1)#######wrong!!!!!!!
+    for(i in start){
+      y_rank[i]=paste(y_rank[i],"Start",sep="")
+    }
+    for(i in  start+groupnum){
+      y_rank[i]=paste(y_rank[i],"End",sep="")
+    }
+
+    combm_data_all<-ranked_data
+    y<-y_rank
+    x<-as.data.frame(combm_data_all)
+    x<-as.matrix(x)
+    x_sig<-as.numeric(x)
+    dim(x_sig)<-dim(combm_data_all)
+    metabol_name<-as.character(drboth[,1])
+    metabol_id<-as.character(drboth[,2])
+    data_sam=list(x=x_sig,y=y, metabolite_id=as.character(1:nrow(x)),
+              metabolite_names=metabol_name, logged2=TRUE)
+
+    samr_obj<- samr::samr(data_sam,  resp.type="One class timecourse",
+                    nperms=100, time.summary.type="slope")
+
+    delta_table <- samr::samr.compute.delta.table(samr_obj, min.foldchange=0,nvals=200)
+    siggenes_table <- samr::samr.compute.siggenes.table(samr_obj, del=0,
+                                                  data_sam, delta_table,all.genes=TRUE)
+
+    a_sig <- siggenes_table$genes.up; # all up regulated genes
+    b_sig <- siggenes_table$genes.lo; # all down regulated genes
+    c_sig <- rbind(a_sig,b_sig)
+    org_colname<-colnames(c_sig)
+    org_colname[2]<-"ID"
+    org_colname[3]<-"Name"
+    colnames(c_sig)<-org_colname
+    row_sig<-as.numeric(c_sig[,1])-1
+    c_sig[,1]<-row_sig
+    c_sig[,2]<-metabol_id[c(row_sig)]
+    c_sig[,3]<-metabol_name[c(row_sig)]
+   # pw_sig = paste(dirout, "RegulatedMetabolites(SAM).xlsx", sep = "")
+   # xlsx::write.xlsx(c_sig, pw_sig,row.names = T)
+   # sig_row_q<-c_sig[,-c(2:6)]
+ #   sig_row_q1<-sig_row_q[order(sig_row_q[,1],decreasing=F),]
+   # tttb<-as.numeric(sig_row_q1[,2])
+ #   tttb<-as.numeric(tttb)/100
+   # ff<-function(x){sum(x<0.05) }
+  #  p_g_a_s<-apply(as.matrix(tttb) ,1,ff)
+  #  p_group<-p_group_adj<-c_sig
+ # }
   #### -----------get the significant different metabolites from "both"----------------####
   # if all number of a row >0.05 delete
   # if all row<0 ,back the row nunmber of testallgroup
-  ff<-function(x){sum(x<0.05) }
-  p_g_a_s<-apply(p_group_adj,1,ff)# each row number of <0.05
+ # ff<-function(x){sum(x<0.05) }
+#  pp_group_adj<-as.data.frame(p_group_adj)
+#  p_g_a_s<-apply(pp_group_adj,1,ff)# each row number of <0.05
   TorF<-matrix(0,nrow=length(p_g_a_s),ncol=1)
   for(i in 1:length(p_g_a_s)){
 
     if(p_g_a_s[i]!=0)TorF[i]<-i
 
   }
-  drboth_data<-testallgroup[-1,]# all both have data (without group)
+  drboth_data_org<-testallgroup[-1,]# all both have data (without group)
+  order_sam<-as.numeric(c_sig[,1])# the SAM order
+  drboth_data<-drboth_data_org[order_sam,]
+
   T_both<-cbind(TorF,drboth_data)
   c_t<-c(0)
   for(i in 1:dim(T_both)[1]){
@@ -473,8 +425,28 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
   if(length(c_t)==1){test_both<-drboth_data}else{
     test_both<-drboth_data[-c_t,] # both-tested metabolites 3part with drpos drpre
   }
+
+ # order_sam<-as.numeric(c_sig[,1])# the SAM order
+
+
   A<-plyr::rbind.fill(test_both,drpos,drpre)
+
   idboth<-as.matrix(test_both[,2])
+  # rowboth_sam<-c()
+  # for (i in 1:length(idboth)){
+  #   for(j in 1:dim(c_sig)[1]){
+  #     if(idboth[i]==as.character(c_sig[j,2]))rowboth_sam<-c(rowboth_sam,j)
+  #     else rowboth_sam<-rowboth_sam
+  #   }
+  #
+  # }
+  # rowboth_sam<-as.numeric(rowboth_sam)
+  # underoreder<-cbind(idboth,rowboth_sam)
+  # samoreder<-underoreder[order(as.numeric(underoreder[,2]),decreasing=F),]
+  #
+  # idboth_dao<-samoreder[,1]
+  idboth<-idboth[c(length(idboth):1)]
+  if(length(idboth)!=0){
   bo_p<-data.frame()
   for(j in 1:length(idboth)){
 
@@ -496,6 +468,11 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
   }
   bopre_p<-bo_p
   bop_p<-cbind(bopre_p,bopos_p)
+  }
+  if(length(idboth)==0){
+    bop_p<-test_both
+  }
+
   A_pre<-plyr::rbind.fill(bop_p,drpos_p,drpre_p)
 
   ###add group row
@@ -505,7 +482,10 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
   A_pre<-rbind(row.tp,A_pre)
   A_pre<-rbind(row.group,A_pre)
   A_pre<-rbind(row.gender,A_pre)
-
+  rownames(p_group)<-as.character(drboth_data_org[,1])
+  p_group<-p_group[order_sam,]
+  rownames(p_group_adj)<-as.character(drboth_data_org[,1])
+  p_group_adj<-p_group_adj[order_sam,]
  # A_pre.t<-as.data.frame(A_pre.t,row.names = NULL)
   ####--------------save the result in a file---------------------####
   Aresult<-list(A=A,A_pre=A_pre,p=p_group,p_adj=p_group_adj)
@@ -525,8 +505,6 @@ GetDiffData<-function(preData,postData,simidata,mv="mean",rz=80,multiple=0.1,sv=
   numSi<-dim(similist)[1]# the number of similar metabolites in datax
   similist<-as.matrix(similist)
 
-  dirout = paste(filepath, "/DifferentialMetabolites", "/", sep = "")
-  dir.create(dirout)
   pwdxdef = paste(dirout, "DifferentialMetabolites(preprocessed).xlsx", sep = "")
   xlsx::write.xlsx(A, pwdxdef,row.names = F)
   wb.rr <-xlsx::loadWorkbook(pwdxdef)
