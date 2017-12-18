@@ -18,6 +18,8 @@ PKs<-function(d.pk,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE){
   #library(Hmisc)
   #--------------------prepare tha data--------------
   d.pk<-as.data.frame(d.pk)
+
+
   headall<-d.pk[,c(1:4)]
   meta.num<-dim(d.pk)[1]-3
   d.time<-d.pk[3,-c(1:4)]
@@ -43,7 +45,7 @@ PKs<-function(d.pk,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE){
   d.pk.data<-as.matrix(d.pk[,-c(1:4)])
   d.pk.data<-matrix(as.numeric(d.pk.data),nrow=nrow(d.pk.data))
   allnumdata<-d.pk.data
-  d.pk.data<-d.pk.data[-c(1,3),]
+  d.pk.data<-d.pk.data[-c(1,2),]
   #------------choose the mean/median value to calculate the pharmacokinetics parameters
   if(d.point=="mean"){
     d.pk.m<-matrix(0,length(time),nrow=dim(d.pk.data)[1])
@@ -66,23 +68,31 @@ PKs<-function(d.pk,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE){
     }
   }
   d.pk.m[is.na(d.pk.m)]<-0
-  aucdata<-matrix(0,nrow=dim(d.pk.data)[1]-1,ncol = 7)
-  auc<-d.pk[-c(1:3),c(1:4)]# prepare a martrix for auc value
+
+
+  f_pk<-function(x){sum(x==0)}
+  numof0_pk<-apply(d.pk.m,1,f_pk)
+  numof0_pk[is.na(numof0_pk)] <- 0
+  d.pk.m.r0<-subset(d.pk.m,subset=(numof0_pk<2))# subset
+  d.pkr0<-subset(d.pk[-c(1:2),],subset=(numof0_pk<2))# subset
+
+  aucdata<-matrix(0,nrow=dim(d.pk.m.r0)[1]-1,ncol = 7)
+  auc<-d.pkr0[-1,c(1:4)]# prepare a martrix for auc value
   auc<-cbind(auc,aucdata)
 ####----------------fill the 0 matrix(auc) with pharmacokinetics parameters----
-
+  mytime<-c(d.pk.m.r0[1,])
   names(auc)<-c("Name","ID","m.z","R.T.min.","Tmax","Tlast","Tfirst","Cmax","Cmin","AUC","CL")
-  for(i in 2:dim(d.pk.data)[1]){
+  for(i in 2:dim(d.pk.m.r0)[1]){
     # id<-d.pk[1,2]
-    myconc <- c(d.pk.m[i,])
-    mytime<-c(time)
-    auc[i-1,5]<-PKNCA::pk.calc.tmax(myconc,mytime)
-    auc[i-1,6]<-PKNCA::pk.calc.tlast(myconc,mytime,check = TRUE)
-    auc[i-1,7]<-PKNCA::pk.calc.tfirst(myconc,mytime,check = TRUE)
-    auc[i-1,8]<-PKNCA::pk.calc.cmax(myconc, check = TRUE)
-    auc[i-1,9]<-PKNCA::pk.calc.cmin(myconc,check = TRUE)
-    auc[i-1,10]<-PKNCA::pk.calc.auc(myconc, mytime, interval=c(0, Inf))
-    auc[i-1,11]<-PKNCA::pk.calc.cl(c(1:d.gn),auc[i-1,10])
+    myconc <- c(d.pk.m.r0[i,])
+    Tho<-pkr::IndiNCA(mytime, myconc)
+    auc[i-1,5]<-Tho[2]
+    auc[i-1,6]<-Tho[6]
+    auc[i-1,7]<-Tho[3]
+    auc[i-1,8]<-Tho[1]
+    auc[i-1,9]<-min(myconc)
+    auc[i-1,10]<-Tho[15]
+    auc[i-1,11]<-Tho[32]
   }
   pk.parameter<-auc #pk.parameter matrix of  id name and auc
   diroutall = paste(filepath, "/PKresults", "/", sep = "")
@@ -572,24 +582,35 @@ PKs<-function(d.pk,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE){
     }
   }
   d.pk.m[is.na(d.pk.m)]<-0
-  aucdata<-matrix(0,nrow=dim(d.pk.data)[1]-1,ncol = 7)
-  auc<-d.pk[-c(1:3),c(1:4)]# prepare a martrix for auc value
-  auc<-cbind(auc,aucdata)
-  #----------------fill the 0 matrix(auc) with pharmacokinetics parameters----
 
+  #######new
+
+
+  f_pk<-function(x){sum(x==0)}
+  numof0_pk<-apply(d.pk.m,1,f_pk)
+  numof0_pk[is.na(numof0_pk)] <- 0
+  d.pk.m.r0<-subset(d.pk.m,subset=(numof0_pk<2))# subset
+  d.pkr0<-subset(d.pk[-c(1:2),],subset=(numof0_pk<2))# subset
+
+  aucdata<-matrix(0,nrow=dim(d.pk.m.r0)[1]-1,ncol = 7)
+  auc<-d.pkr0[-1,c(1:4)]# prepare a martrix for auc value
+  auc<-cbind(auc,aucdata)
+  ####----------------fill the 0 matrix(auc) with pharmacokinetics parameters----
+  mytime<-c(d.pk.m.r0[1,])
   names(auc)<-c("Name","ID","m.z","R.T.min.","Tmax","Tlast","Tfirst","Cmax","Cmin","AUC","CL")
-  for(i in 2:dim(d.pk.data)[1]){
+  for(i in 2:dim(d.pk.m.r0)[1]){
     # id<-d.pk[1,2]
-    myconc <- c(d.pk.m[i,])
-    mytime<-c(time)
-    auc[i-1,5]<-PKNCA::pk.calc.tmax(myconc,mytime)
-    auc[i-1,6]<-PKNCA::pk.calc.tlast(myconc,mytime,check = TRUE)
-    auc[i-1,7]<-PKNCA::pk.calc.tfirst(myconc,mytime,check = TRUE)
-    auc[i-1,8]<-PKNCA::pk.calc.cmax(myconc, check = TRUE)
-    auc[i-1,9]<-PKNCA::pk.calc.cmin(myconc,check = TRUE)
-    auc[i-1,10]<-PKNCA::pk.calc.auc(myconc, mytime, interval=c(0, Inf))
-    auc[i-1,11]<-PKNCA::pk.calc.cl(c(1:d.gn),auc[i-1,10])
+    myconc <- c(d.pk.m.r0[i,])
+    Tho<-pkr::IndiNCA(mytime, myconc)
+    auc[i-1,5]<-Tho[2]
+    auc[i-1,6]<-Tho[6]
+    auc[i-1,7]<-Tho[3]
+    auc[i-1,8]<-Tho[1]
+    auc[i-1,9]<-min(myconc)
+    auc[i-1,10]<-Tho[15]
+    auc[i-1,11]<-Tho[32]
   }
+  #####
   pk.parameter<-auc #pk.parameter matrix of  id name and auc
   dirout = paste(diroutall, "/PKresults(male)", "/", sep = "")
   dir.create(dirout)
@@ -1051,24 +1072,34 @@ PKs<-function(d.pk,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE){
     }
   }
   d.pk.m[is.na(d.pk.m)]<-0
-  aucdata<-matrix(0,nrow=dim(d.pk.data)[1]-1,ncol = 7)
-  auc<-d.pk[-c(1:3),c(1:4)]# prepare a martrix for auc value
+
+
+  f_pk<-function(x){sum(x==0)}
+  numof0_pk<-apply(d.pk.m,1,f_pk)
+  numof0_pk[is.na(numof0_pk)] <- 0
+  d.pk.m.r0<-subset(d.pk.m,subset=(numof0_pk<2))# subset
+  d.pkr0<-subset(d.pk[-c(1:2),],subset=(numof0_pk<2))# subset
+
+  aucdata<-matrix(0,nrow=dim(d.pk.m.r0)[1]-1,ncol = 7)
+  auc<-d.pkr0[-1,c(1:4)]# prepare a martrix for auc value
   auc<-cbind(auc,aucdata)
+  ####----------------fill the 0 matrix(auc) with pharmacokinetics parameters----
+  mytime<-c(d.pk.m.r0[1,])
+  names(auc)<-c("Name","ID","m.z","R.T.min.","Tmax","Tlast","Tfirst","Cmax","Cmin","AUC","CL")
+  for(i in 2:dim(d.pk.m.r0)[1]){
+    # id<-d.pk[1,2]
+    myconc <- c(d.pk.m.r0[i,])
+    Tho<-pkr::IndiNCA(mytime, myconc)
+    auc[i-1,5]<-Tho[2]
+    auc[i-1,6]<-Tho[6]
+    auc[i-1,7]<-Tho[3]
+    auc[i-1,8]<-Tho[1]
+    auc[i-1,9]<-min(myconc)
+    auc[i-1,10]<-Tho[15]
+    auc[i-1,11]<-Tho[32]
+  }
   #----------------fill the 0 matrix(auc) with pharmacokinetics parameters----
 
-  names(auc)<-c("Name","ID","m.z","R.T.min.","Tmax","Tlast","Tfirst","Cmax","Cmin","AUC","CL")
-  for(i in 2:dim(d.pk.data)[1]){
-    # id<-d.pk[1,2]
-    myconc <- c(d.pk.m[i,])
-    mytime<-c(time)
-    auc[i-1,5]<-PKNCA::pk.calc.tmax(myconc,mytime)
-    auc[i-1,6]<-PKNCA::pk.calc.tlast(myconc,mytime,check = TRUE)
-    auc[i-1,7]<-PKNCA::pk.calc.tfirst(myconc,mytime,check = TRUE)
-    auc[i-1,8]<-PKNCA::pk.calc.cmax(myconc, check = TRUE)
-    auc[i-1,9]<-PKNCA::pk.calc.cmin(myconc,check = TRUE)
-    auc[i-1,10]<-PKNCA::pk.calc.auc(myconc, mytime, interval=c(0, Inf))
-    auc[i-1,11]<-PKNCA::pk.calc.cl(c(1:d.gn),auc[i-1,10])
-  }
   pk.parameter<-auc #pk.parameter matrix of  id name and auc
   dirout = paste(diroutall, "/PKresults(female)", "/", sep = "")
   dir.create(dirout)

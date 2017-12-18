@@ -286,6 +286,7 @@ ScatPlot<-function(scat.data,scform="PCA",num.of.cp=2,fold=100,filepath,design=F
     #data.ma1<-data.ma1[,order(data.ma1[dim(data.ma1)[1],])]
     y.group<-data[1,-c(1:4)]
 
+
     ma.plsda<-mixOmics::plsda(data.ma2,y.group,mode = "classic",ncomp = num.of.cp)
 ######add
     perf_plsda<-mixOmics::perf(ma.plsda,validation = "Mfold", folds = 5)

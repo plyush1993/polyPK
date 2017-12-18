@@ -45,7 +45,7 @@ CL: The rate of clear.
 
 Tlast: The last time.
 
-Tfirst: The first time.
+Tfirst: Time to observe the first non-zero concentration.
 
 Cmin: The least plasma concentration of a drug after administration.
 %%  \item{comp2 }{Description of 'comp2'}
@@ -75,8 +75,8 @@ nothing
 }
 \examples{
 
-data("B")
-PKs(B,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE)
+data("C")
+PKs(C,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE)
 ####the result is saved in your current working directory of the R process
 
 }

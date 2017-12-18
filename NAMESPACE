@@ -17,16 +17,15 @@ export(ScatPlot)
   importFrom("graphics", "axis")
   importFrom(Hmisc,errbar)
    importFrom("stats", "dist")
-import("plyr","PKNCA","xlsx")
+import("plyr","pkr","xlsx")
 importFrom(mixOmics,plsda,pls)
 importFrom(pcaMethods,completeObs,pca)
 importFrom(impute,impute.knn)
-importFrom(missForest,missForest)
+
 importFrom(imputeLCMD,impute.QRILC)
 importFrom(sqldf,sqldf)
 importFrom(corrplot,corrplot)
 importFrom(circlize,chordDiagram)
 importFrom(gplots,heatmap.2)
-
 
 

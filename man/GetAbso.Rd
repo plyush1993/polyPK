@@ -76,7 +76,7 @@ nothing
 data("drugData")
 data("A")
 data("simidata")
-data("design")
+#data("design")
 GetAbso(drugData, A,simidata, sim = 80, filepath=getwd(),design=FALSE)
 ##the result is saved in your current working directory of the R process,which
 ##is the input (C) of function GetSecdAbso

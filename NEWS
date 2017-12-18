@@ -1,3 +1,11 @@
+polyPK v3.0.0 (2017-12-18)
+==============
+
+Changes:
+
+* A version of polyPK which does not depend on PKNCA package.
+
+
 polyPK v2.0.0 (2017-10-23)
 ==============
 
