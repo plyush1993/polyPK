@@ -1,3 +1,11 @@
+polyPK v3.1.0 (2018-7-11)
+==============
+
+Changes:
+
+* A version of polyPK which does not depend on samr package.
+
+
 polyPK v3.0.0 (2017-12-18)
 ==============
 

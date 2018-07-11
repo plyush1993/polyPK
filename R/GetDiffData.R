@@ -338,7 +338,7 @@ GetDiffData<-function(preData,postData,simidata,mv="min",rz=80,sv=TRUE,log=FALSE
 
 
   }
- ######### if(t=="SAM"){
+ ######### if(t=="SAM"){SAM start
 
     rank_num<-rep(c(0:people_num),groupnum)
     rank_data_post<-rbind(rank_num,drboth[,-c(1:4)])
@@ -373,24 +373,8 @@ GetDiffData<-function(preData,postData,simidata,mv="min",rz=80,sv=TRUE,log=FALSE
     data_sam=list(x=x_sig,y=y, metabolite_id=as.character(1:nrow(x)),
               metabolite_names=metabol_name, logged2=TRUE)
 
-    samr_obj<- samr::samr(data_sam,  resp.type="One class timecourse",
-                    nperms=100, time.summary.type="slope")
 
-    delta_table <- samr::samr.compute.delta.table(samr_obj, min.foldchange=0,nvals=200)
-    siggenes_table <- samr::samr.compute.siggenes.table(samr_obj, del=0,
-                                                  data_sam, delta_table,all.genes=TRUE)
 
-    a_sig <- siggenes_table$genes.up; # all up regulated genes
-    b_sig <- siggenes_table$genes.lo; # all down regulated genes
-    c_sig <- rbind(a_sig,b_sig)
-    org_colname<-colnames(c_sig)
-    org_colname[2]<-"ID"
-    org_colname[3]<-"Name"
-    colnames(c_sig)<-org_colname
-    row_sig<-as.numeric(c_sig[,1])-1
-    c_sig[,1]<-row_sig
-    c_sig[,2]<-metabol_id[c(row_sig)]
-    c_sig[,3]<-metabol_name[c(row_sig)]
    # pw_sig = paste(dirout, "RegulatedMetabolites(SAM).xlsx", sep = "")
    # xlsx::write.xlsx(c_sig, pw_sig,row.names = T)
    # sig_row_q<-c_sig[,-c(2:6)]
@@ -414,8 +398,10 @@ GetDiffData<-function(preData,postData,simidata,mv="min",rz=80,sv=TRUE,log=FALSE
 
   }
   drboth_data_org<-testallgroup[-1,]# all both have data (without group)
-  order_sam<-as.numeric(c_sig[,1])# the SAM order
-  drboth_data<-drboth_data_org[order_sam,]
+
+
+  #}SAM end
+  drboth_data<-drboth_data_org
 
   T_both<-cbind(TorF,drboth_data)
   c_t<-c(0)
@@ -483,9 +469,11 @@ GetDiffData<-function(preData,postData,simidata,mv="min",rz=80,sv=TRUE,log=FALSE
   A_pre<-rbind(row.group,A_pre)
   A_pre<-rbind(row.gender,A_pre)
   rownames(p_group)<-as.character(drboth_data_org[,1])
-  p_group<-p_group[order_sam,]
+  p_group<-p_group
   rownames(p_group_adj)<-as.character(drboth_data_org[,1])
-  p_group_adj<-p_group_adj[order_sam,]
+  p_group_adj<-p_group_adj
+
+
  # A_pre.t<-as.data.frame(A_pre.t,row.names = NULL)
   ####--------------save the result in a file---------------------####
   Aresult<-list(A=A,A_pre=A_pre,p=p_group,p_adj=p_group_adj)

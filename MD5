@@ -1,10 +1,10 @@
-687700d66d67501a9964b2b4b84d5d56 *DESCRIPTION
+900249cc0d84c55c8e6ec49d0224f086 *DESCRIPTION
 34e005860f2483072b58c18a0fc99c12 *NAMESPACE
-3943bcf099f85c42c3cefd38770cbb5d *NEWS
+7d41ec765fb05a1660f2bf3cb400b816 *NEWS
 b693206134b746402c2d0445d0d3ee82 *R/CorrPlot.R
 d9bed793b3c45c38048b49b970448987 *R/DataPre.R
 914fde71497b5ddfb93d9270af3a0e79 *R/GetAbso.R
-a4494ca7a52bd08c20bedea98295d708 *R/GetDiffData.R
+d6165430be43a1dbf6f14385b44adc2a *R/GetDiffData.R
 025cecf742cbbb263012fb7b22ac3997 *R/GetEndo.R
 13113d50ea89a6b414dd0db69a3ab7a7 *R/GetSecdAbso.R
 44fd068ef14be14da324836bc2100075 *R/HeatMap.R
@@ -22,7 +22,7 @@ b3106955724dff6bbe8b4cfd29451be3 *data/drugData.rda
 f8e7a7ad703600847a6fa8b717d15a63 *data/simidata.rda
 9a5bb18fadff56481542e6cf40be8bea *inst/doc/my-vignette.R
 14ee197115f4669cafbe7dcc40ddbc4b *inst/doc/my-vignette.Rmd
-44608f503b3320e91733dacbf044e017 *inst/doc/my-vignette.html
+959c20a11f98d03a34396372ce5b58f2 *inst/doc/my-vignette.html
 934d938fef581fd19ed87f80deccc0c9 *man/A.Rd
 12d14bb4ab066416b4c759c0f17b2898 *man/B.Rd
 f67cac04be41918751eaadd2e9b9088d *man/C.Rd
