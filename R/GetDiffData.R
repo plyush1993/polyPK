@@ -285,7 +285,7 @@ GetDiffData<-function(preData,postData,simidata,mv="min",rz=80,sv=TRUE,log=FALSE
     tb<-tb[,-c(5:(4+tg[g]))]
 
   }
-  lipre<-as.vector(li[[1]])
+  lipre<-as.data.frame(li[[1]])
 
   p_group_2<-p_group<-matrix(0,nrow = dim(lipre)[1],ncol=length(tg)-1)
 
@@ -301,7 +301,7 @@ GetDiffData<-function(preData,postData,simidata,mv="min",rz=80,sv=TRUE,log=FALSE
     dim(lipre)<-dim(orglipre)
 
     for(g in 2:length(tg)) {
-      lipos<-as.vector(li[[g]])
+      lipos<-as.data.frame(li[[g]])
       lipos<-as.matrix(lipos)
       lipos<-as.numeric(lipos)
       dim(lipos)<-dim(orglipre)
@@ -321,7 +321,7 @@ GetDiffData<-function(preData,postData,simidata,mv="min",rz=80,sv=TRUE,log=FALSE
   }
   if(t=="MWtest"){
     for(g in 2:length(tg)) {
-      lipos<-as.vector(li[[g]])
+      lipos<-as.data.frame(li[[g]])
       for(i in 1:dim(lipre)[1]){
         t_prepos<-wilcox.test(as.numeric(lipre[i,]),as.numeric(lipos[i,]),exact = FALSE)
         p_group_2[i,g-1]<-t_prepos$p.value
