@@ -39,8 +39,8 @@ PKs<-function(d.pk,d.point="mean",d.ebar="SE",filepath=getwd(),design=FALSE){
   d.gn<-as.numeric(d.gn)
   time<-c(d.bn:d.gn)
   lentime<-length(time)
-  dim(timecc)<-c(alltime/lentime,lentime)
-  timecourse<-timecc[1,]
+  #dim(timecc)<-c(alltime/lentime,lentime)
+  timecourse<-time
 
   d.pk.data<-as.matrix(d.pk[,-c(1:4)])
   d.pk.data<-matrix(as.numeric(d.pk.data),nrow=nrow(d.pk.data))
